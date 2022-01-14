@@ -133,6 +133,7 @@ const Game = () => {
     if (numCardsPlayed < 9 && cardSum < 20) {
       const workingMainDeck = [...mainDeck];
       const cardToDeal = workingMainDeck.pop();
+      setMainDeck(workingMainDeck);
       return cardToDeal;
     }
   };

@@ -54,7 +54,7 @@ const Player = ({
         {playerDeck.map((i) => (
           <li>
             <Card
-              handDisabled={handDisabled}
+              handDisabled={handDisabled || currentPlayer !== playerNumber}
               cardSum={cardSum}
               setCardSum={setCardSum}
               cardNumber={i}
