@@ -18,6 +18,8 @@ const Game = () => {
   const [cardsPlayed, setCardsPlayed] = useState(0);
   const [cardSum, setCardSum] = useState(0);
   const [turn, setTurn] = useState(0);
+  const [setOver, setSetOver] = useState("");
+  const [gameOver, setGameOver] = useState("");
   // Side deck: 10 unique cards player chooses before match
   // Four cards of side deck chosen at random for player
   // Plus cards: 1-6 pts
@@ -70,16 +72,56 @@ const Game = () => {
     return out;
   };
 
-  // Create and shuffle main deck
-  useEffect(() => {
+  const playAgain = (message) => {
+    if (window.confirm(`${message} Play again?`)) {
+      resetGame();
+    } else {
+      return;
+    }
+  };
+
+  const setOverPopup = () => {
+    let message;
+    if (setOver === "win") {
+      message = "You win!";
+    } else if (setOver === "tie") {
+      message = "Tie!";
+    } else if (setOver === "lose") {
+      message = "You lose.";
+    }
+    playAgain(message);
+  };
+
+  const checkGameStatus = () => {
+    if (cardSum > 20) {
+      setSetOver("lose");
+      setOverPopup();
+    } else if (cardSum === 20) {
+      setSetOver("win");
+      setOverPopup();
+    }
+  };
+
+  const resetGame = () => {
+    setGameOver("");
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
+  };
+
+  // Create and shuffle main deck
+  useEffect(() => {
+    resetGame();
   }, []);
 
   // Create player deck
   useEffect(() => {
     setPlayerDeck(generatePlayerDeck());
   }, [sideDeck]);
+
+  // Game status
+  useEffect(() => {
+    checkGameStatus();
+  }, [cardSum]);
 
   const drawMainCard = () => {
     if (cardsPlayed < 9 && cardSum < 20) {
