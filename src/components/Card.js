@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Card = ({ turn, setTurn, cardSum, setCardSum, cardNumber }) => {
+const Card = ({ handDisabled, cardSum, setCardSum, cardNumber }) => {
   const [value, setValue] = useState(0);
   const [sign, setSign] = useState("positive");
   const [signSwitchable, setSignSwitchable] = useState(false);
@@ -58,7 +58,6 @@ const Card = ({ turn, setTurn, cardSum, setCardSum, cardNumber }) => {
     if (!played) {
       logCard();
       setPlayed(true);
-      setTurn(turn + 1);
       setCardSum(cardSum + value);
     }
   };
@@ -92,10 +91,10 @@ const Card = ({ turn, setTurn, cardSum, setCardSum, cardNumber }) => {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={playCard} disabled={played || turn === 0}>
+        <button onClick={playCard} disabled={played || handDisabled}>
           {value}
         </button>
-        <button onClick={switchSign} disabled={played || turn === 0}>
+        <button onClick={switchSign} disabled={played || handDisabled}>
           SWITCH
         </button>
       </div>
@@ -104,7 +103,7 @@ const Card = ({ turn, setTurn, cardSum, setCardSum, cardNumber }) => {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={playCard} disabled={played || turn === 0}>
+        <button onClick={playCard} disabled={played || handDisabled}>
           {value}
         </button>
       </div>

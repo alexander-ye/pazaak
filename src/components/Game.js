@@ -21,7 +21,6 @@ const Game = () => {
   const [drawnCards, setDrawnCards] = useState([]);
   const [playerDeck, setPlayerDeck] = useState([]);
   const [cardsPlayed, setCardsPlayed] = useState(0);
-  const [cardSum, setCardSum] = useState(0);
   const [turn, setTurn] = useState(0);
   const [setOver, setSetOver] = useState("");
   const [gameOver, setGameOver] = useState("");
@@ -102,21 +101,20 @@ const Game = () => {
     playAgain(message);
   };
 
-  const checkGameStatus = () => {
-    if (cardSum > 20) {
-      setSetOver("lose");
-      setOverPopup();
-    } else if (cardSum === 20) {
-      setSetOver("win");
-      setOverPopup();
-    }
-  };
+  // const checkGameStatus = () => {
+  //   if (cardSum > 20) {
+  //     setSetOver("lose");
+  //     setOverPopup();
+  //   } else if (cardSum === 20) {
+  //     setSetOver("win");
+  //     setOverPopup();
+  //   }
+  // };
 
   const resetGame = () => {
     setGameOver("");
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
-    setCardSum(0);
     setTurn(0);
     setCardsPlayed(0);
   };
@@ -128,25 +126,21 @@ const Game = () => {
 
   // Create player deck
   useEffect(() => {
-    setPlayerDeck(generatePlayerDeck());
+    setPlayerDeck(generatePlayerDeck(sideDeck));
   }, [sideDeck]);
 
-  // Game status
-  useEffect(() => {
-    checkGameStatus();
-  }, [cardSum]);
-
-  const drawMainCard = () => {
-    if (cardsPlayed < 9 && cardSum < 20) {
-      const gameMainDeck = [...mainDeck];
-      const cardToDraw = gameMainDeck.pop();
-      setDrawnCards([...drawnCards, cardToDraw]);
-      setMainDeck(gameMainDeck);
-      setCardSum(cardSum + cardToDraw);
-      setCardsPlayed(cardsPlayed + 1);
-      setTurn(turn + 1);
+  const dealMainDeckCard = (numCardsPlayed, cardSum) => {
+    if (numCardsPlayed < 9 && cardSum < 20) {
+      const workingMainDeck = [...mainDeck];
+      const cardToDeal = workingMainDeck.pop();
+      return cardToDeal;
     }
   };
+
+  // Each turn:
+  // 1. Deal main deck card
+  // 2. Play cards
+  // 3. End turn
 
   const logDecks = () => {
     console.log(mainDeck);
@@ -155,22 +149,24 @@ const Game = () => {
 
   return (
     <div>
-      <button onClick={drawMainCard}>DRAW</button>
-      <p>{cardSum}</p>
       <div className="allBoardsContainer" style={allBoardsContainerStyle}>
         <Player
           playerNumber={1}
           currentPlayer={currentPlayer}
           switchPlayer={switchPlayer}
+          generatePlayerDeck={generatePlayerDeck}
+          dealMainDeckCard={dealMainDeckCard}
         />
         <Player
           playerNumber={-1}
           currentPlayer={currentPlayer}
           switchPlayer={switchPlayer}
+          generatePlayerDeck={generatePlayerDeck}
+          dealMainDeckCard={dealMainDeckCard}
         />
       </div>
 
-      <h2>Player Deck</h2>
+      {/* <h2>Player Deck</h2>
       <ul>
         {playerDeck.map((i) => (
           <li>
@@ -183,7 +179,7 @@ const Game = () => {
             />
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 };
