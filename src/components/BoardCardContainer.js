@@ -6,17 +6,24 @@ const boardCardContainerStyle = {
   border: "1px solid red",
 };
 
+const textStyle = {
+  color: "white",
+  fontFamily: "sans serif",
+  fontWeight: "bold",
+  textAlign: "center",
+};
+
 const BoardCardContainer = ({ i }) => {
   if (i === 0) {
     return (
       <div className="boardCardContainer" style={boardCardContainerStyle}>
-        <button>NO CARD</button>
+        <p style={textStyle}>NO CARD</p>
       </div>
     );
   } else {
     return (
       <div className="boardCardContainer" style={boardCardContainerStyle}>
-        <button>{i}</button>
+        <p style={textStyle}>{i}</p>
       </div>
     );
   }

@@ -18,13 +18,10 @@ const Game = () => {
   // Main deck: four sets of cards numbered 1-10
   const [mainDeck, setMainDeck] = useState([]);
   const [sideDeck, setSideDeck] = useState([]);
-  const [drawnCards, setDrawnCards] = useState([]);
-  const [playerDeck, setPlayerDeck] = useState([]);
-  const [cardsPlayed, setCardsPlayed] = useState(0);
-  const [turn, setTurn] = useState(0);
   const [setOver, setSetOver] = useState("");
   const [gameOver, setGameOver] = useState("");
   const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [gameStart, setGameStart] = useState(false);
   // Side deck: 10 unique cards player chooses before match
   // Four cards of side deck chosen at random for player
   // Plus cards: 1-6 pts
@@ -115,19 +112,12 @@ const Game = () => {
     setGameOver("");
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
-    setTurn(0);
-    setCardsPlayed(0);
   };
 
   // Create and shuffle main deck
   useEffect(() => {
     resetGame();
   }, []);
-
-  // Create player deck
-  useEffect(() => {
-    setPlayerDeck(generatePlayerDeck(sideDeck));
-  }, [sideDeck]);
 
   const dealMainDeckCard = (numCardsPlayed, cardSum) => {
     if (numCardsPlayed < 9 && cardSum < 20) {
@@ -148,41 +138,30 @@ const Game = () => {
     console.log(sideDeck);
   };
 
-  return (
-    <div>
-      <div className="allBoardsContainer" style={allBoardsContainerStyle}>
-        <Player
-          playerNumber={1}
-          currentPlayer={currentPlayer}
-          switchPlayer={switchPlayer}
-          generatePlayerDeck={generatePlayerDeck}
-          dealMainDeckCard={dealMainDeckCard}
-        />
-        <Player
-          playerNumber={-1}
-          currentPlayer={currentPlayer}
-          switchPlayer={switchPlayer}
-          generatePlayerDeck={generatePlayerDeck}
-          dealMainDeckCard={dealMainDeckCard}
-        />
+  if (gameStart) {
+    return (
+      <div>
+        <div className="allBoardsContainer" style={allBoardsContainerStyle}>
+          <Player
+            playerNumber={1}
+            currentPlayer={currentPlayer}
+            switchPlayer={switchPlayer}
+            generatePlayerDeck={generatePlayerDeck}
+            dealMainDeckCard={dealMainDeckCard}
+          />
+          <Player
+            playerNumber={-1}
+            currentPlayer={currentPlayer}
+            switchPlayer={switchPlayer}
+            generatePlayerDeck={generatePlayerDeck}
+            dealMainDeckCard={dealMainDeckCard}
+          />
+        </div>
       </div>
-
-      {/* <h2>Player Deck</h2>
-      <ul>
-        {playerDeck.map((i) => (
-          <li>
-            <Card
-              turn={turn}
-              setTurn={setTurn}
-              cardSum={cardSum}
-              setCardSum={setCardSum}
-              cardNumber={i}
-            />
-          </li>
-        ))}
-      </ul> */}
-    </div>
-  );
+    );
+  } else {
+    return <button onClick={() => setGameStart(true)}>START GAME</button>;
+  }
 };
 
 export default Game;

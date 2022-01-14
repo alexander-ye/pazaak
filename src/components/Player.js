@@ -15,8 +15,7 @@ const Player = ({
   const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [numCardsPlayed, setNumCardsPlayed] = useState(0);
   const [cardSum, setCardSum] = useState(0);
-  // const [sideDeck, setSideDeck] = useState([]);
-
+  const [active, setActive] = useState(true);
   const ID = playerNumber;
   const playerDeck = generatePlayerDeck();
 
@@ -24,16 +23,34 @@ const Player = ({
     setNumCardsPlayed(numCardsPlayed + 1);
   };
 
-  const turnLoop = () => {
-    const cardToDeal = dealMainDeckCard(numCardsPlayed, cardSum);
-    setCardSum(cardSum + cardToDeal);
+  const setCardOnBoard = (cardVal) => {
     const boardCards = [...cardsPlayed];
-    boardCards.splice(numCardsPlayed, 1, cardToDeal);
+    boardCards.splice(numCardsPlayed, 1, cardVal);
     setCardsPlayed(boardCards);
+  };
+
+  const playCard = (cardVal) => {
+    setCardOnBoard(cardVal);
     setNumCardsPlayed(numCardsPlayed + 1);
-    setHandDisabled(false);
+    setCardSum(cardSum + cardVal);
+  };
+
+  const drawFromMainDeck = () => {
+    const cardToDeal = dealMainDeckCard(numCardsPlayed, cardSum);
+    playCard(cardToDeal);
+  };
+
+  const turnLoop = () => {
+    setHandDisabled(true);
     switchPlayer();
   };
+
+  useEffect(() => {
+    if (currentPlayer === ID) {
+      drawFromMainDeck();
+      setHandDisabled(false);
+    }
+  }, [currentPlayer]);
 
   return (
     <div>
@@ -56,7 +73,7 @@ const Player = ({
             <Card
               handDisabled={handDisabled || currentPlayer !== playerNumber}
               cardSum={cardSum}
-              setCardSum={setCardSum}
+              playCard={playCard}
               cardNumber={i}
             />
           </li>
