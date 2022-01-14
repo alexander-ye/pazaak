@@ -1,10 +1,25 @@
-function Card(value, valueSwitchable, signSwitchable) {
-  this.value = value;
-  this.valueSwitchable = valueSwitchable;
-  this.signSwitchable = signSwitchable;
-}
 class Card {
-  constructor(numberID) {
-    this.value = numberID;
+  constructor(value, sign, signSwitchable) {
+    this.value = value;
+    this.sign = sign;
+    this.signSwitchable = signSwitchable;
+  }
+  getValue() {
+    return this.value;
+  }
+  getSign() {
+    return this.sign;
+  }
+  switchSign() {
+    if (this.signSwitchable) {
+      this.value = -this.value;
+      if (this.sign === "plus") {
+        this.sign = "minus";
+      } else {
+        this.sign = "plus";
+      }
+    }
   }
 }
+
+export default Card;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
-import Player from "./Player";
+import PlayerComponent from "./PlayerComponent";
+import Deck from "./Deck";
 
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
@@ -8,6 +9,16 @@ import Player from "./Player";
 // Fill table: 9 cards on table without busting, autowin
 // Tiebreaker
 // First to 3 sets
+// Side deck: 10 unique cards player chooses before match
+// Four cards of side deck chosen at random for player
+// Plus cards: 1-6 pts
+// Minus cards: 1-6 pts
+// Plus/minus cards: 1-6 pts
+// +/- 1 or 2 card
+// Flip card: change signs of written number of all cards on player's table
+// 2&4, 3&6
+// Double Card: double value of player's last played card
+// Tiebreaker card: +/-1 card, tiebreaker
 
 const allBoardsContainerStyle = {
   display: "flex",
@@ -15,26 +26,35 @@ const allBoardsContainerStyle = {
 };
 
 const Game = () => {
-  // Main deck: four sets of cards numbered 1-10
+  // Decks
   const [mainDeck, setMainDeck] = useState([]);
   const [sideDeck, setSideDeck] = useState([]);
+  // Round state
   const [setOver, setSetOver] = useState("");
-  const [gameOver, setGameOver] = useState("");
-  const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [currentPlayer, setCurrentPlayer] = useState(0);
   const [gameStart, setGameStart] = useState(false);
-  // Side deck: 10 unique cards player chooses before match
-  // Four cards of side deck chosen at random for player
-  // Plus cards: 1-6 pts
-  // Minus cards: 1-6 pts
-  // Plus/minus cards: 1-6 pts
-  // +/- 1 or 2 card
-  // Flip card: change signs of written number of all cards on player's table
-  // 2&4, 3&6
-  // Double Card: double value of player's last played card
-  // Tiebreaker card: +/-1 card, tiebreaker
+  // Player states
+  const [player1, setPlayer1] = useState({
+    id: 0,
+    score: 0,
+    cardSum: 0,
+    standing: false,
+    active: false,
+  });
+  const [player2, setPlayer2] = useState({
+    id: 1,
+    score: 0,
+    cardSum: 0,
+    standing: false,
+    active: false,
+  });
 
   const switchPlayer = () => {
-    setCurrentPlayer(-currentPlayer);
+    if (currentPlayer === 0) {
+      setCurrentPlayer(1);
+    } else {
+      setCurrentPlayer(0);
+    }
   };
 
   const shuffleDeck = (deckArray) => {
@@ -80,7 +100,7 @@ const Game = () => {
 
   const playAgain = (message) => {
     if (window.confirm(`${message} Play again?`)) {
-      resetGame();
+      resetRound();
     } else {
       return;
     }
@@ -108,15 +128,14 @@ const Game = () => {
   //   }
   // };
 
-  const resetGame = () => {
-    setGameOver("");
+  const resetRound = () => {
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
   };
 
   // Create and shuffle main deck
   useEffect(() => {
-    resetGame();
+    resetRound();
   }, []);
 
   const dealMainDeckCard = (numCardsPlayed, cardSum) => {
@@ -125,6 +144,9 @@ const Game = () => {
       const cardToDeal = workingMainDeck.pop();
       setMainDeck(workingMainDeck);
       return cardToDeal;
+    } else {
+      console.log("Cant deal");
+      return 0;
     }
   };
 
@@ -141,20 +163,23 @@ const Game = () => {
   if (gameStart) {
     return (
       <div>
+        <Deck />
         <div className="allBoardsContainer" style={allBoardsContainerStyle}>
-          <Player
-            playerNumber={1}
+          <PlayerComponent
             currentPlayer={currentPlayer}
             switchPlayer={switchPlayer}
             generatePlayerDeck={generatePlayerDeck}
             dealMainDeckCard={dealMainDeckCard}
+            player={player1}
+            setPlayer={setPlayer1}
           />
-          <Player
-            playerNumber={-1}
+          <PlayerComponent
             currentPlayer={currentPlayer}
             switchPlayer={switchPlayer}
             generatePlayerDeck={generatePlayerDeck}
             dealMainDeckCard={dealMainDeckCard}
+            player={player2}
+            setPlayer={setPlayer2}
           />
         </div>
       </div>
