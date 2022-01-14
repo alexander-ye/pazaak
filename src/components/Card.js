@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-const Card = ({ cardNumber }) => {
+const Card = ({ cardSum, setCardSum, cardNumber }) => {
   const [value, setValue] = useState(0);
   const [sign, setSign] = useState("positive");
   const [signSwitchable, setSignSwitchable] = useState(false);
   const [valueSwitchable, setValueSwitchable] = useState(false);
+  const [played, setPlayed] = useState(false);
 
   const setCardValue = (number) => {
     if (number > 0 && number < 7) {
@@ -46,6 +47,21 @@ const Card = ({ cardNumber }) => {
     }
   };
 
+  const logCard = () => {
+    console.log(value);
+    console.log(sign);
+    console.log(signSwitchable);
+    console.log(valueSwitchable);
+  };
+
+  const playCard = () => {
+    if (!played) {
+      logCard();
+      setPlayed(true);
+      setCardSum(cardSum + value);
+    }
+  };
+
   const switchSign = () => {
     if (signSwitchable) {
       setValue(-value);
@@ -71,26 +87,25 @@ const Card = ({ cardNumber }) => {
     setCardValue(cardNumber);
   }, []);
 
-  const logCard = () => {
-    console.log(value);
-    console.log(sign);
-    console.log(signSwitchable);
-    console.log(valueSwitchable);
-  };
-
   if (signSwitchable) {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={logCard}>{value}</button>
-        <button onClick={switchSign}>SWITCH</button>
+        <button onClick={playCard} disabled={played}>
+          {value}
+        </button>
+        <button onClick={switchSign} disabled={played}>
+          SWITCH
+        </button>
       </div>
     );
   } else {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={logCard}>{value}</button>
+        <button onClick={playCard} disabled={played}>
+          {value}
+        </button>
       </div>
     );
   }
