@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "./Card";
-import Deck from "./Deck";
+import Player from "./Player";
 
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
@@ -8,6 +8,11 @@ import Deck from "./Deck";
 // Fill table: 9 cards on table without busting, autowin
 // Tiebreaker
 // First to 3 sets
+
+const allBoardsContainerStyle = {
+  display: "flex",
+  flexDirection: "row",
+};
 
 const Game = () => {
   // Main deck: four sets of cards numbered 1-10
@@ -20,6 +25,7 @@ const Game = () => {
   const [turn, setTurn] = useState(0);
   const [setOver, setSetOver] = useState("");
   const [gameOver, setGameOver] = useState("");
+  const [currentPlayer, setCurrentPlayer] = useState(1);
   // Side deck: 10 unique cards player chooses before match
   // Four cards of side deck chosen at random for player
   // Plus cards: 1-6 pts
@@ -30,6 +36,10 @@ const Game = () => {
   // 2&4, 3&6
   // Double Card: double value of player's last played card
   // Tiebreaker card: +/-1 card, tiebreaker
+
+  const switchPlayer = () => {
+    setCurrentPlayer(-currentPlayer);
+  };
 
   const shuffleDeck = (deckArray) => {
     // Fisher-Yates (aka Knuth) Shuffle
@@ -106,6 +116,9 @@ const Game = () => {
     setGameOver("");
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
+    setCardSum(0);
+    setTurn(0);
+    setCardsPlayed(0);
   };
 
   // Create and shuffle main deck
@@ -144,6 +157,19 @@ const Game = () => {
     <div>
       <button onClick={drawMainCard}>DRAW</button>
       <p>{cardSum}</p>
+      <div className="allBoardsContainer" style={allBoardsContainerStyle}>
+        <Player
+          playerNumber={1}
+          currentPlayer={currentPlayer}
+          switchPlayer={switchPlayer}
+        />
+        <Player
+          playerNumber={-1}
+          currentPlayer={currentPlayer}
+          switchPlayer={switchPlayer}
+        />
+      </div>
+
       <h2>Player Deck</h2>
       <ul>
         {playerDeck.map((i) => (
