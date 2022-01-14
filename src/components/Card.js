@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Card = ({ cardSum, setCardSum, cardNumber }) => {
+const Card = ({ turn, setTurn, cardSum, setCardSum, cardNumber }) => {
   const [value, setValue] = useState(0);
   const [sign, setSign] = useState("positive");
   const [signSwitchable, setSignSwitchable] = useState(false);
@@ -58,6 +58,7 @@ const Card = ({ cardSum, setCardSum, cardNumber }) => {
     if (!played) {
       logCard();
       setPlayed(true);
+      setTurn(turn + 1);
       setCardSum(cardSum + value);
     }
   };
@@ -91,10 +92,10 @@ const Card = ({ cardSum, setCardSum, cardNumber }) => {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={playCard} disabled={played}>
+        <button onClick={playCard} disabled={played || turn === 0}>
           {value}
         </button>
-        <button onClick={switchSign} disabled={played}>
+        <button onClick={switchSign} disabled={played || turn === 0}>
           SWITCH
         </button>
       </div>
@@ -103,7 +104,7 @@ const Card = ({ cardSum, setCardSum, cardNumber }) => {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={playCard} disabled={played}>
+        <button onClick={playCard} disabled={played || turn === 0}>
           {value}
         </button>
       </div>

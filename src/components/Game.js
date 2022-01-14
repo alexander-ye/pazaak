@@ -17,6 +17,7 @@ const Game = () => {
   const [playerDeck, setPlayerDeck] = useState([]);
   const [cardsPlayed, setCardsPlayed] = useState(0);
   const [cardSum, setCardSum] = useState(0);
+  const [turn, setTurn] = useState(0);
   // Side deck: 10 unique cards player chooses before match
   // Four cards of side deck chosen at random for player
   // Plus cards: 1-6 pts
@@ -66,7 +67,7 @@ const Game = () => {
     let out = [...sideDeck];
     out = shuffleDeck(out);
     out = out.slice(0, 4);
-    setPlayerDeck(out);
+    return out;
   };
 
   // Create and shuffle main deck
@@ -74,6 +75,11 @@ const Game = () => {
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
   }, []);
+
+  // Create player deck
+  useEffect(() => {
+    setPlayerDeck(generatePlayerDeck());
+  }, [sideDeck]);
 
   const drawMainCard = () => {
     if (cardsPlayed < 9 && cardSum < 20) {
@@ -83,6 +89,7 @@ const Game = () => {
       setMainDeck(gameMainDeck);
       setCardSum(cardSum + cardToDraw);
       setCardsPlayed(cardsPlayed + 1);
+      setTurn(turn + 1);
     }
   };
 
@@ -93,24 +100,19 @@ const Game = () => {
 
   return (
     <div>
-      <button onClick={logDecks}></button>
-      <ul>
-        {mainDeck.map((i) => (
-          <li>{i}</li>
-        ))}
-      </ul>
       <button onClick={drawMainCard}>DRAW</button>
-      <ul>
-        {drawnCards.map((i) => (
-          <li>{i}</li>
-        ))}
-      </ul>
       <p>{cardSum}</p>
-      <button onClick={generatePlayerDeck}>CREATE PLAYER DECK</button>
+      <h2>Player Deck</h2>
       <ul>
         {playerDeck.map((i) => (
           <li>
-            <Card cardSum={cardSum} setCardSum={setCardSum} cardNumber={i} />
+            <Card
+              turn={turn}
+              setTurn={setTurn}
+              cardSum={cardSum}
+              setCardSum={setCardSum}
+              cardNumber={i}
+            />
           </li>
         ))}
       </ul>
