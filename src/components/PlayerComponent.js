@@ -14,6 +14,7 @@ const PlayerComponent = ({
   const [handDisabled, setHandDisabled] = useState(true);
   const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [numCardsPlayed, setNumCardsPlayed] = useState(0);
+  const [handCardPlayed, setHandCardPlayed] = useState(false);
   const ID = player.id;
   const playerDeck = generatePlayerDeck();
 
@@ -64,6 +65,13 @@ const PlayerComponent = ({
     setCardSum(player.cardSum + cardVal);
   };
 
+  const playHandCard = (cardVal) => {
+    if (!handCardPlayed) {
+      playCard(cardVal);
+      setHandCardPlayed(true);
+    }
+  };
+
   const drawFromMainDeck = () => {
     const cardToDeal = dealMainDeckCard(numCardsPlayed, player.cardSum);
     playCard(cardToDeal);
@@ -96,6 +104,7 @@ const PlayerComponent = ({
     if (currentPlayer === ID && !player.standing) {
       drawFromMainDeck();
       setHandDisabled(false);
+      setHandCardPlayed(false);
     }
   }, [currentPlayer]);
 
@@ -143,10 +152,13 @@ const PlayerComponent = ({
           <li>
             <Card
               handDisabled={
-                player.standing || handDisabled || currentPlayer !== ID
+                handCardPlayed ||
+                player.standing ||
+                handDisabled ||
+                currentPlayer !== ID
               }
               cardSum={player.cardSum}
-              playCard={playCard}
+              playCard={playHandCard}
               cardNumber={i}
             />
           </li>

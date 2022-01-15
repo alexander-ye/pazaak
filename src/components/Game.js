@@ -6,7 +6,6 @@ import Player from "../classes/player";
 
 // TODOS:
 // ROUNDS
-// PLAYERS CAN ONLY PLAY ONE CARD PER TURN
 
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
