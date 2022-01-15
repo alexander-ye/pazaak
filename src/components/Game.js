@@ -4,6 +4,10 @@ import PlayerComponent from "./PlayerComponent";
 import Deck from "./Deck";
 import Player from "../classes/player";
 
+// TODOS:
+// ROUNDS
+// PLAYERS CAN ONLY PLAY ONE CARD PER TURN
+
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
 // Bust: over 20 after turn
