@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const Card = ({ handDisabled, cardSum, playCard, cardNumber }) => {
+const Card = ({ handDisabled, cardSum, playCard, cardNumber, kind }) => {
   const [value, setValue] = useState(0);
   const [sign, setSign] = useState("positive");
   const [signSwitchable, setSignSwitchable] = useState(false);
