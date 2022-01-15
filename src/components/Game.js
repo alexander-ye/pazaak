@@ -31,14 +31,17 @@ const Game = () => {
   const [mainDeck, setMainDeck] = useState([]);
   const [sideDeck, setSideDeck] = useState([]);
   // Round state
-  const [setOver, setSetOver] = useState("");
+  const [setOver, setSetOver] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [gameStart, setGameStart] = useState(false);
+  const [roundWinner, setRoundWinner] = useState("");
+  const [tie, setTie] = useState(false);
   // Player states
   const [player1, setPlayer1] = useState({
     id: 0,
     score: 0,
     cardSum: 0,
+    cardsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     standing: false,
     active: false,
     bust: false,
@@ -48,19 +51,58 @@ const Game = () => {
     id: 1,
     score: 0,
     cardSum: 0,
+    cardsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0],
     standing: false,
     active: false,
     bust: false,
     winRound: false,
   });
 
+  const pickWinner = (player) => {
+    setRoundWinner(`Player ${player.id + 1}`);
+  };
+
   useEffect(() => {
-    if (player1.winRound) {
-      console.log("Player 1 wins!");
-    } else if (player2.winRound) {
-      console.log("Player 2 wins!");
+    if (player1.standing && player2.standing) {
+      if (player1.cardSum === player2.cardSum) {
+        setTie(true);
+      } else if (player1.cardSum === 20) {
+        pickWinner(player1);
+      } else if (player2.cardSum === 20) {
+        pickWinner(player2);
+      } else if (player1.cardSum < 20 && player2.cardSum < 20) {
+        if (player1.cardSum > player2.cardSum) {
+          pickWinner(player1);
+        } else {
+          pickWinner(player2);
+        }
+      } else {
+        if (player1.cardSum > 20) {
+          pickWinner(player2);
+        } else {
+          pickWinner(player1);
+        }
+      }
     }
   }, [player1, player2]);
+
+  useEffect(() => {
+    if (roundWinner) {
+      console.log(`${roundWinner} wins`);
+      setSetOver(true);
+    } else if (tie) {
+      console.log("Round tie");
+      setSetOver(true);
+    }
+  }, [roundWinner, tie]);
+
+  useEffect(() => {
+    if (setOver) {
+      if (window.confirm("New Set?")) {
+        newRound();
+      }
+    }
+  }, [setOver]);
 
   const resetPlayer = (player) => {
     const out = { ...player };
@@ -96,10 +138,6 @@ const Game = () => {
     } else {
       setCurrentPlayer(0);
     }
-  };
-
-  const sendWinMessage = (winMessage) => {
-    window.confirm();
   };
 
   const shuffleDeck = (deckArray) => {
@@ -145,38 +183,17 @@ const Game = () => {
 
   const playAgain = (message) => {
     if (window.confirm(`${message} Play again?`)) {
-      resetRound();
+      return; // TODO
     } else {
       return;
     }
   };
 
-  const setOverPopup = () => {
-    let message;
-    if (setOver === "win") {
-      message = "You win!";
-    } else if (setOver === "tie") {
-      message = "Tie!";
-    } else if (setOver === "lose") {
-      message = "You lose.";
-    }
-    playAgain(message);
-  };
-
-  // const checkGameStatus = () => {
-  //   if (cardSum > 20) {
-  //     setSetOver("lose");
-  //     setOverPopup();
-  //   } else if (cardSum === 20) {
-  //     setSetOver("win");
-  //     setOverPopup();
-  //   }
-  // };
-
   const newRound = () => {
     setMainDeck(generateMainDeck());
     resetPlayers();
   };
+
   const resetRound = () => {
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
@@ -203,11 +220,6 @@ const Game = () => {
   // 1. Deal main deck card
   // 2. Play cards
   // 3. End turn
-
-  const logDecks = () => {
-    console.log(mainDeck);
-    console.log(sideDeck);
-  };
 
   if (gameStart) {
     return (
