@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Card from "./Card";
 import PlayerComponent from "./PlayerComponent";
 import Deck from "./Deck";
+import Player from "../classes/player";
 
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
@@ -40,6 +41,8 @@ const Game = () => {
     cardSum: 0,
     standing: false,
     active: false,
+    bust: false,
+    winRound: false,
   });
   const [player2, setPlayer2] = useState({
     id: 1,
@@ -47,7 +50,45 @@ const Game = () => {
     cardSum: 0,
     standing: false,
     active: false,
+    bust: false,
+    winRound: false,
   });
+
+  useEffect(() => {
+    if (player1.winRound) {
+      console.log("Player 1 wins!");
+    } else if (player2.winRound) {
+      console.log("Player 2 wins!");
+    }
+  }, [player1, player2]);
+
+  const resetPlayer = (player) => {
+    const out = { ...player };
+    out.score = 0;
+    out.cardSum = 0;
+    out.standing = false;
+    out.active = false;
+    out.bust = false;
+    out.win = false;
+  };
+
+  const resetPlayers = () => {
+    setPlayer1(resetPlayer(player1));
+    setPlayer2(resetPlayer(player2));
+  };
+  const testPlayer = new Player("Hi", 0, 0);
+
+  // const resetPlayers = () => {
+  //   const new1, new2 =
+  // }
+
+  const getOtherPlayerState = (playerID) => {
+    if (playerID === 0) {
+      return player2;
+    } else {
+      return player1;
+    }
+  };
 
   const switchPlayer = () => {
     if (currentPlayer === 0) {
@@ -55,6 +96,10 @@ const Game = () => {
     } else {
       setCurrentPlayer(0);
     }
+  };
+
+  const sendWinMessage = (winMessage) => {
+    window.confirm();
   };
 
   const shuffleDeck = (deckArray) => {
@@ -128,6 +173,10 @@ const Game = () => {
   //   }
   // };
 
+  const newRound = () => {
+    setMainDeck(generateMainDeck());
+    resetPlayers();
+  };
   const resetRound = () => {
     setMainDeck(generateMainDeck());
     setSideDeck(generateSideDeck());
@@ -172,6 +221,7 @@ const Game = () => {
             dealMainDeckCard={dealMainDeckCard}
             player={player1}
             setPlayer={setPlayer1}
+            getOtherPlayerState={getOtherPlayerState}
           />
           <PlayerComponent
             currentPlayer={currentPlayer}
@@ -180,6 +230,7 @@ const Game = () => {
             dealMainDeckCard={dealMainDeckCard}
             player={player2}
             setPlayer={setPlayer2}
+            getOtherPlayerState={getOtherPlayerState}
           />
         </div>
       </div>

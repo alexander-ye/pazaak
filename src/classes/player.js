@@ -1,4 +1,4 @@
-class Player {
+export default class Player {
   constructor(name, score, cardSum) {
     this.name = name;
     this.score = score;
@@ -16,10 +16,11 @@ class Player {
   setCardSum(m) {
     this.cardSum = m;
   }
+  gameReset() {
+    this.score = 0;
+    this.cardSum = 0;
+  }
+  roundReset() {
+    this.cardSum = 0;
+  }
 }
-
-const out = {
-  Player,
-};
-
-export default out;

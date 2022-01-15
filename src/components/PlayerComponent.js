@@ -9,6 +9,7 @@ const PlayerComponent = ({
   dealMainDeckCard,
   player,
   setPlayer,
+  getOtherPlayerState,
 }) => {
   const [handDisabled, setHandDisabled] = useState(true);
   const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -25,10 +26,27 @@ const PlayerComponent = ({
   };
 
   const stand = () => {
-    const playerToModify = { ...player };
-    playerToModify.standing = true;
-    setPlayer(playerToModify);
-    switchPlayer();
+    if (checkBust()) {
+      console.log("Lose");
+    } else {
+      const playerToModify = { ...player };
+      playerToModify.standing = true;
+      setPlayer(playerToModify);
+      switchPlayer();
+    }
+  };
+
+  const checkBust = () => {
+    if (player.cardSum > 20) {
+      return true;
+    }
+  };
+
+  const check20 = () => {
+    console.log(`${ID} ${player.cardSum}`);
+    if (player.cardSum === 20) {
+      return true;
+    }
   };
 
   const testButton = () => {
@@ -53,20 +71,42 @@ const PlayerComponent = ({
   };
 
   const turnLoop = () => {
-    if (!player.standing) {
-      setHandDisabled(true);
+    if (checkBust()) {
+      player.bust = true;
+      getOtherPlayerState(ID).winRound = true;
+      switchPlayer();
+    } else if (check20()) {
+      player.standing = true;
       switchPlayer();
     } else {
-      drawFromMainDeck();
+      if (getOtherPlayerState(ID).standing) {
+        drawFromMainDeck();
+      } else {
+        switchPlayer();
+      }
     }
   };
 
   useEffect(() => {
-    if (currentPlayer === ID) {
+    if (currentPlayer === ID && !player.winRound) {
       drawFromMainDeck();
       setHandDisabled(false);
     }
   }, [currentPlayer]);
+
+  useEffect(() => {
+    if (check20()) {
+      player.standing = true;
+      if (!getOtherPlayerState(ID).standing) {
+        switchPlayer();
+      }
+    }
+  }, [player.cardSum]);
+  // useEffect(() => {
+  //   if (checkBust()) {
+  //     console.log("Bust");
+  //   }
+  // }, [player]);
 
   return (
     <div>
