@@ -1,7 +1,9 @@
-class Deck {
+export default class Deck {
   constructor(cards) {
     this.cards = cards;
     this.size = cards.length;
+    this.remainingCards = cards;
+    this.playedCards = [];
   }
   getSize() {
     return this.size;
@@ -24,9 +26,6 @@ class Deck {
         deckCopy[currentIndex],
       ];
     }
-
-    return deckCopy;
+    this.cards = deckCopy;
   }
 }
-
-export default Deck;

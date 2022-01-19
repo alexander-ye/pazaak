@@ -1,8 +1,9 @@
 export default class Player {
-  constructor(name, score, cardSum) {
+  constructor(name, score, cardSum, hand) {
     this.name = name;
     this.score = score;
     this.cardSum = cardSum;
+    this.hand = hand;
   }
   getScore() {
     return this.score;
@@ -22,5 +23,11 @@ export default class Player {
   }
   roundReset() {
     this.cardSum = 0;
+  }
+  generateHand(sideDeck) {
+    let out = [...sideDeck];
+    out.shuffleCards();
+    out = out.slice(0, 4);
+    this.hand = out;
   }
 }

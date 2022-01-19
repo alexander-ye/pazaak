@@ -73,16 +73,6 @@ const Card = ({ handDisabled, cardSum, playCard, cardNumber, kind }) => {
     }
   };
 
-  // const switchOneTwo = () => {
-  //   if (switchable) {
-  //     if (value === 1) {
-  //       setValue(2);
-  //     } else if (value === 2) {
-  //       setValue(1);
-  //     }
-  //   }
-  // };
-
   useEffect(() => {
     setCardValue(cardNumber);
   }, []);

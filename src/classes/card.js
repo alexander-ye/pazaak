@@ -1,14 +1,22 @@
-class Card {
-  constructor(value, sign, signSwitchable) {
+export default class Card {
+  constructor(value, sign, signSwitchable, kind, special) {
     this.value = value;
     this.sign = sign;
     this.signSwitchable = signSwitchable;
+    this.kind = kind;
+    this.special = special;
   }
   getValue() {
     return this.value;
   }
   getSign() {
     return this.sign;
+  }
+  getKind() {
+    return this.kind;
+  }
+  getSpecial() {
+    return this.special;
   }
   switchSign() {
     if (this.signSwitchable) {
@@ -21,5 +29,3 @@ class Card {
     }
   }
 }
-
-export default Card;

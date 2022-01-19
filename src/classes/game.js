@@ -3,27 +3,29 @@ import Deck from "./deck";
 import Player from "./player";
 
 class Game {
-  constructor() {}
+  constructor(players) {
+    this.player = players;
+  }
+  generateMainDeck() {
+    let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [i, i, i, i]);
+    out.map((i) => new Card(i, "plus", false, "mainDeck", null));
+    return out;
+  }
+  generateSideDeck() {
+    let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [i, -i]);
+    // Normal positive and negative 1-6 cards
+    out.map(
+      (i) => new Card(i, i < 0 ? "minus" : "plus", false, "sideDeck", null)
+    );
+    // Tiebreaker card
+    out.push(new Card(1, "plus", true, "sideDeck", "tieBreaker"));
+    // +/- 1-6 cards
+    out.push(
+      [1, 2, 3, 4, 5, 6].map((i) => new Card(i, "plus", true, "sideDeck", null))
+    );
+    return out;
+  }
 }
-
-const generateMainDeck = () => {
-  let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [i, i, i, i]);
-  out = shuffleDeck(out);
-  return out;
-};
-
-const generateSideDeck = () => {
-  let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [i, -i, i + 6]);
-  out.push(13, 100);
-  return out;
-};
-
-const generatePlayerDeck = () => {
-  let out = [...sideDeck];
-  out = shuffleDeck(out);
-  out = out.slice(0, 4);
-  return out;
-};
 
 const winConditions = () => {
   console.log(
