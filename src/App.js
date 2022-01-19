@@ -1,11 +1,11 @@
-import React from "react";
-import Game from "./components/Game";
+import React, { useState, useEffect } from "react";
+import LocalGameComponent from "./components/LocalGameComponent";
 import Player from "./classes/player";
 
 function App() {
   return (
     <div className="App">
-      <Game />
+      <LocalGameComponent />
     </div>
   );
 }

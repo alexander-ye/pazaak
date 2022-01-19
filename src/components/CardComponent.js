@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-const Card = ({ handDisabled, cardSum, playCard, cardNumber, kind }) => {
+const CardComponent = ({
+  handDisabled,
+  cardSum,
+  playCard,
+  cardNumber,
+  kind,
+}) => {
   const [value, setValue] = useState(0);
   const [sign, setSign] = useState("positive");
   const [signSwitchable, setSignSwitchable] = useState(false);
@@ -101,4 +107,4 @@ const Card = ({ handDisabled, cardSum, playCard, cardNumber, kind }) => {
   }
 };
 
-export default Card;
+export default CardComponent;

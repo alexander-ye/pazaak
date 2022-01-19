@@ -1,7 +1,7 @@
 import React from "react";
 
-const Deck = ({ cards }) => {
+const DeckComponent = ({ cards }) => {
   return <div></div>;
 };
 
-export default Deck;
+export default DeckComponent;

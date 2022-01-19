@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Board from "./Board";
-import Card from "./Card";
+import Card from "./CardComponent";
 
 const PlayerComponent = ({
   currentPlayer,
@@ -47,10 +47,6 @@ const PlayerComponent = ({
     if (player.cardSum === 20) {
       return true;
     }
-  };
-
-  const testButton = () => {
-    setNumCardsPlayed(numCardsPlayed + 1);
   };
 
   const setCardOnBoard = (cardVal) => {
@@ -121,9 +117,11 @@ const PlayerComponent = ({
 
   return (
     <div>
-      <button onClick={testButton}>{`PLAYER ${ID}`}</button>
       <Board cardsPlayed={cardsPlayed} setCardsPlayed={setCardsPlayed} />
-      <h3>{player.cardSum}</h3>
+      <h3>
+        {player.cardSum} || Other Player Card Sum:{" "}
+        {getOtherPlayerState(ID).cardSum}
+      </h3>
       {/* End turn */}
       <button
         onClick={turnLoop}

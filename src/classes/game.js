@@ -11,20 +11,6 @@ class Game {
     out.map((i) => new Card(i, "plus", false, "mainDeck", null));
     return out;
   }
-  generateSideDeck() {
-    let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [i, -i]);
-    // Normal positive and negative 1-6 cards
-    out.map(
-      (i) => new Card(i, i < 0 ? "minus" : "plus", false, "sideDeck", null)
-    );
-    // Tiebreaker card
-    out.push(new Card(1, "plus", true, "sideDeck", "tieBreaker"));
-    // +/- 1-6 cards
-    out.push(
-      [1, 2, 3, 4, 5, 6].map((i) => new Card(i, "plus", true, "sideDeck", null))
-    );
-    return out;
-  }
 }
 
 const winConditions = () => {

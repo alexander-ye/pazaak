@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Card from "./Card";
+import CardComponent from "./CardComponent";
 import PlayerComponent from "./PlayerComponent";
-import Deck from "./Deck";
+import DeckComponent from "./DeckComponent";
 import Player from "../classes/player";
 
 // TODOS:
@@ -29,13 +29,25 @@ const allBoardsContainerStyle = {
   flexDirection: "row",
 };
 
-const Game = () => {
+const LocalGameComponent = () => {
+  // Turn switching
+  const [switchingTurns, setSwitchingTurns] = useState(false);
+
+  const switchTurnTrue = () => {
+    setSwitchingTurns(true);
+  };
+
+  const switchTurnFalse = () => {
+    setSwitchingTurns(false);
+  };
+
+  const [currentPlayer, setCurrentPlayer] = useState(0);
+
   // Decks
   const [mainDeck, setMainDeck] = useState([]);
   const [sideDeck, setSideDeck] = useState([]);
   // Round state
   const [setOver, setSetOver] = useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState(0);
   const [gameStart, setGameStart] = useState(false);
   const [roundWinner, setRoundWinner] = useState("");
   const [tie, setTie] = useState(false);
@@ -136,6 +148,7 @@ const Game = () => {
   };
 
   const switchPlayer = () => {
+    switchTurnTrue();
     if (currentPlayer === 0) {
       setCurrentPlayer(1);
     } else {
@@ -225,34 +238,54 @@ const Game = () => {
   // 3. End turn
 
   if (gameStart) {
-    return (
-      <div>
-        <Deck />
-        <div className="allBoardsContainer" style={allBoardsContainerStyle}>
-          <PlayerComponent
-            currentPlayer={currentPlayer}
-            switchPlayer={switchPlayer}
-            generatePlayerDeck={generatePlayerDeck}
-            dealMainDeckCard={dealMainDeckCard}
-            player={player1}
-            setPlayer={setPlayer1}
-            getOtherPlayerState={getOtherPlayerState}
-          />
-          <PlayerComponent
-            currentPlayer={currentPlayer}
-            switchPlayer={switchPlayer}
-            generatePlayerDeck={generatePlayerDeck}
-            dealMainDeckCard={dealMainDeckCard}
-            player={player2}
-            setPlayer={setPlayer2}
-            getOtherPlayerState={getOtherPlayerState}
-          />
+    if (!switchingTurns) {
+      return (
+        <PlayerComponent
+          currentPlayer={currentPlayer}
+          switchPlayer={switchPlayer}
+          generatePlayerDeck={generatePlayerDeck}
+          dealMainDeckCard={dealMainDeckCard}
+          player={currentPlayer === 0 ? player1 : player2}
+          setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
+          getOtherPlayerState={getOtherPlayerState}
+        />
+      );
+    } else {
+      return (
+        <div>
+          <h2>Player {currentPlayer + 1}'s Turn</h2>
+          <button onClick={switchTurnFalse}>Ready</button>
         </div>
-      </div>
-    );
+      );
+    }
+    // return (
+    //   <div>
+    //     <DeckComponent />
+    //     <div className="allBoardsContainer" style={allBoardsContainerStyle}>
+    //       <PlayerComponent
+    //         currentPlayer={currentPlayer}
+    //         switchPlayer={switchPlayer}
+    //         generatePlayerDeck={generatePlayerDeck}
+    //         dealMainDeckCard={dealMainDeckCard}
+    //         player={player1}
+    //         setPlayer={setPlayer1}
+    //         getOtherPlayerState={getOtherPlayerState}
+    //       />
+    //       <PlayerComponent
+    //         currentPlayer={currentPlayer}
+    //         switchPlayer={switchPlayer}
+    //         generatePlayerDeck={generatePlayerDeck}
+    //         dealMainDeckCard={dealMainDeckCard}
+    //         player={player2}
+    //         setPlayer={setPlayer2}
+    //         getOtherPlayerState={getOtherPlayerState}
+    //       />
+    //     </div>
+    //   </div>
+    // );
   } else {
     return <button onClick={() => setGameStart(true)}>START GAME</button>;
   }
 };
 
-export default Game;
+export default LocalGameComponent;
