@@ -248,6 +248,7 @@ const LocalGameComponent = () => {
           player={currentPlayer === 0 ? player1 : player2}
           setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
           getOtherPlayerState={getOtherPlayerState}
+          local
         />
       );
     } else {

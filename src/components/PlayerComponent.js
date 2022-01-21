@@ -10,6 +10,7 @@ const PlayerComponent = ({
   player,
   setPlayer,
   getOtherPlayerState,
+  local
 }) => {
   const [handDisabled, setHandDisabled] = useState(true);
   const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
