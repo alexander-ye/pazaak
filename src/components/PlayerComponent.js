@@ -12,12 +12,12 @@ const PlayerComponent = ({
   getOtherPlayerState,
   local,
 }) => {
-  const emptyBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0].flatMap((i) => [
-    new Card(0, null, false, "cardSlot", null),
-  ]);
-
   const [handDisabled, setHandDisabled] = useState(true);
-  const [cardsPlayed, setCardsPlayed] = useState(emptyBoard);
+  const [cardsPlayed, setCardsPlayed] = useState(
+    [0, 0, 0, 0, 0, 0, 0, 0, 0].flatMap((i) => [
+      new Card(0, null, false, "cardSlot", null),
+    ])
+  );
   const [numCardsPlayed, setNumCardsPlayed] = useState(0);
   const [handCardPlayed, setHandCardPlayed] = useState(false);
   const [cardSumToDisplay, setCardSumToDisplay] = useState(player.cardSum);
@@ -25,8 +25,8 @@ const PlayerComponent = ({
   const sideDeck = player.sideDeck;
 
   // If cardSum === 20 {setStanding(true)}
-  const setCardSum = (i) => {
-    const playerToModify = { ...player };
+  const setPlayerCardSum = (i) => {
+    const playerToModify = player.clone();
     playerToModify.cardSum = i;
     setPlayer(playerToModify);
   };
@@ -66,8 +66,11 @@ const PlayerComponent = ({
     setCardOnBoard(card);
     if (card.value !== 0) {
       setNumCardsPlayed(numCardsPlayed + 1);
+      console.log(player.cardSum);
       const newCardSum = player.cardSum + card.value;
-      setCardSum(player.cardSum);
+      console.log(newCardSum);
+      setPlayerCardSum(newCardSum);
+      console.log(player.cardSum);
       setCardSumToDisplay(newCardSum);
     }
   };
@@ -80,7 +83,7 @@ const PlayerComponent = ({
   };
 
   const drawFromMainDeck = () => {
-    const cardToDeal = dealMainDeckCard(numCardsPlayed, player.cardSum);
+    const cardToDeal = dealMainDeckCard(player.cardSum);
     playCard(cardToDeal);
   };
 
@@ -128,10 +131,7 @@ const PlayerComponent = ({
 
   return (
     <div>
-      <Board
-        cardsPlayed={cardsPlayed || emptyBoard}
-        setCardsPlayed={setCardsPlayed}
-      />
+      <Board cardsPlayed={cardsPlayed} setCardsPlayed={setCardsPlayed} />
       <h3>
         {cardSumToDisplay} || Other Player Card Sum:{" "}
         {getOtherPlayerState(ID).cardSum}

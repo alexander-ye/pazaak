@@ -49,15 +49,14 @@ const LocalGameComponent = () => {
   const [gameStart, setGameStart] = useState(false);
   const [roundWinner, setRoundWinner] = useState("");
   const [tie, setTie] = useState(false);
+  // Players
   // Player states
-  const newPlayer1 = new Player(0, "Player 1", 0, 0, []);
-  newPlayer1.generateSideDeck();
-  newPlayer1.generateHand();
-  const newPlayer2 = new Player(1, "Player 2", 0, 0, []);
-  newPlayer2.generateSideDeck();
-  newPlayer2.generateHand();
-  const [player1, setPlayer1] = useState(newPlayer1);
-  const [player2, setPlayer2] = useState(newPlayer2);
+  const [player1, setPlayer1] = useState(new Player(0, "Player 1", 0, 0, []));
+  const [player2, setPlayer2] = useState(new Player(1, "Player 2", 0, 0, []));
+  player1.generateSideDeck();
+  player1.generateHand();
+  player2.generateSideDeck();
+  player2.generateHand();
 
   const newGame = new Game();
   newGame.generateMainDeck();
@@ -156,8 +155,8 @@ const LocalGameComponent = () => {
   }, []);
 
   const dealMainDeckCard = (cardSum) => {
-    if (mainDeck.playedCards.size < 9 && cardSum < 20) {
-      const workingMainDeck = [...mainDeck];
+    if (mainDeck.playedCards.length < 9 && cardSum < 20) {
+      const workingMainDeck = mainDeck.clone();
       const cardToDeal = workingMainDeck.playNextCard();
       setMainDeck(workingMainDeck);
       return cardToDeal;
@@ -178,7 +177,7 @@ const LocalGameComponent = () => {
           currentPlayer={currentPlayer}
           switchPlayer={switchPlayer}
           dealMainDeckCard={dealMainDeckCard}
-          player={currentPlayer === 0 ? newPlayer1 : newPlayer2}
+          player={currentPlayer === 0 ? player1 : player2}
           setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
           getOtherPlayerState={getOtherPlayerState}
           local

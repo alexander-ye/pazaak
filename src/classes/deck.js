@@ -38,4 +38,11 @@ export default class Deck {
     }
     this.cards = deckCopy;
   }
+
+  clone() {
+    const out = new Deck(this.cards);
+    out.remainingCards = this.remainingCards;
+    out.playedCards = this.playedCards;
+    return out;
+  }
 }

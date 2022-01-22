@@ -55,4 +55,19 @@ export default class Player {
     const out = this.sideDeck.cards.slice(0, 4);
     this.hand = out;
   }
+
+  clone() {
+    const out = new Player(
+      this.id,
+      this.name,
+      this.score,
+      this.cardSum,
+      this.sideDeck
+    );
+    out.hand = this.hand;
+    out.standing = this.standing;
+    out.bust = this.bust;
+    out.winRound = this.winRound;
+    return out;
+  }
 }

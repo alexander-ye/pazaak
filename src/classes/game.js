@@ -17,8 +17,12 @@ export default class Game {
   }
 
   generateMainDeck() {
-    let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [i, i, i, i]);
-    out.map((i) => new Card(i, "plus", false, "mainDeck", null));
+    let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [
+      new Card(i, "plus", false, "mainDeck", null),
+      new Card(i, "plus", false, "mainDeck", null),
+      new Card(i, "plus", false, "mainDeck", null),
+      new Card(i, "plus", false, "mainDeck", null),
+    ]);
     this.mainDeck = new Deck(out);
   }
 
