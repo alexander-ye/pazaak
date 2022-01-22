@@ -5,6 +5,7 @@ export default class Card {
     this.signSwitchable = signSwitchable;
     this.kind = kind;
     this.special = special;
+    this.played = false;
   }
   getValue() {
     return this.value;

@@ -1,4 +1,5 @@
 import Card from "./card";
+import Deck from "./deck";
 
 export default class Player {
   constructor(id, name, score, cardSum, sideDeck) {
@@ -7,6 +8,10 @@ export default class Player {
     this.score = score;
     this.cardSum = cardSum;
     this.sideDeck = sideDeck;
+    this.hand = [];
+    this.standing = false;
+    this.bust = false;
+    this.winRound = false;
   }
   getScore() {
     return this.score;
@@ -20,31 +25,34 @@ export default class Player {
   setCardSum(m) {
     this.cardSum = m;
   }
-  gameReset() {
+  reset() {
     this.score = 0;
     this.cardSum = 0;
+    this.sideDeck = [];
+    this.hand = [];
+    this.standing = false;
+    this.bust = false;
+    this.winRound = false;
   }
   roundReset() {
     this.cardSum = 0;
   }
   generateSideDeck() {
-    let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [i, -i]);
-    // Normal positive and negative 1-6 cards
-    out.map(
-      (i) => new Card(i, i < 0 ? "minus" : "plus", false, "sideDeck", null)
-    );
+    let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [
+      // Plus cards
+      new Card(i, "plus", false, "sideDeck", null),
+      // Minus cards
+      new Card(-i, "minus", false, "sideDeck", null),
+      // Plus-minus cards
+      new Card(i, "plus", true, "sideDeck", null),
+    ]);
     // Tiebreaker card
     out.push(new Card(1, "plus", true, "sideDeck", "tieBreaker"));
-    // +/- 1-6 cards
-    out.push(
-      [1, 2, 3, 4, 5, 6].map((i) => new Card(i, "plus", true, "sideDeck", null))
-    );
-    this.sideDeck = out;
+    this.sideDeck = new Deck(out);
   }
-  generateHand(sideDeck) {
-    let out = [...sideDeck];
-    out.shuffleCards();
-    out = out.slice(0, 4);
+  generateHand() {
+    this.sideDeck.shuffleCards();
+    const out = this.sideDeck.cards.slice(0, 4);
     this.hand = out;
   }
 }

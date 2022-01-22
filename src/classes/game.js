@@ -2,14 +2,34 @@ import Card from "./card";
 import Deck from "./deck";
 import Player from "./player";
 
-class Game {
-  constructor(players) {
-    this.player = players;
+export default class Game {
+  constructor() {
+    this.players = [];
+    this.mainDeck = [];
   }
+
+  getMainDeck() {
+    return this.mainDeck;
+  }
+
+  resetPlayers() {
+    this.players.map((player) => player.reset());
+  }
+
   generateMainDeck() {
     let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [i, i, i, i]);
     out.map((i) => new Card(i, "plus", false, "mainDeck", null));
-    return out;
+    this.mainDeck = new Deck(out);
+  }
+
+  prepNewRound() {
+    this.resetPlayers();
+    this.generateMainDeck();
+  }
+
+  prepNewGame() {
+    this.resetPlayers();
+    this.generateMainDeck();
   }
 }
 

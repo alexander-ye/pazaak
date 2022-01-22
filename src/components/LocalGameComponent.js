@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import CardComponent from "./CardComponent";
 import PlayerComponent from "./PlayerComponent";
 import DeckComponent from "./DeckComponent";
+import Card from "../classes/card";
+import Game from "../classes/game";
 import Player from "../classes/player";
 
 // TODOS:
 // ROUNDS
-
 // Outscore: 20 or under, greater than opponent
 // Tie: both players same pts
 // Bust: over 20 after turn
@@ -43,35 +44,30 @@ const LocalGameComponent = () => {
 
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
-  // Decks
-  const [mainDeck, setMainDeck] = useState([]);
-  const [sideDeck, setSideDeck] = useState([]);
   // Round state
   const [setOver, setSetOver] = useState(false);
   const [gameStart, setGameStart] = useState(false);
   const [roundWinner, setRoundWinner] = useState("");
   const [tie, setTie] = useState(false);
   // Player states
-  const [player1, setPlayer1] = useState({
-    id: 0,
-    score: 0,
-    cardSum: 0,
-    cardsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    standing: false,
-    active: false,
-    bust: false,
-    winRound: false,
-  });
-  const [player2, setPlayer2] = useState({
-    id: 1,
-    score: 0,
-    cardSum: 0,
-    cardsPlayed: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    standing: false,
-    active: false,
-    bust: false,
-    winRound: false,
-  });
+  const newPlayer1 = new Player(0, "Player 1", 0, 0, []);
+  newPlayer1.generateSideDeck();
+  newPlayer1.generateHand();
+  const newPlayer2 = new Player(1, "Player 2", 0, 0, []);
+  newPlayer2.generateSideDeck();
+  newPlayer2.generateHand();
+  const [player1, setPlayer1] = useState(newPlayer1);
+  const [player2, setPlayer2] = useState(newPlayer2);
+
+  const newGame = new Game();
+  newGame.generateMainDeck();
+  newGame.players = [player1, player2];
+
+  // Game
+  const [game, setGame] = useState(newGame);
+
+  // Decks
+  const [mainDeck, setMainDeck] = useState(game.getMainDeck());
 
   const pickWinner = (player) => {
     setRoundWinner(`Player ${player.id + 1}`);
@@ -119,26 +115,6 @@ const LocalGameComponent = () => {
     }
   }, [setOver]);
 
-  const resetPlayer = (player) => {
-    const out = { ...player };
-    out.score = 0;
-    out.cardSum = 0;
-    out.standing = false;
-    out.active = false;
-    out.bust = false;
-    out.win = false;
-  };
-
-  const resetPlayers = () => {
-    setPlayer1(resetPlayer(player1));
-    setPlayer2(resetPlayer(player2));
-  };
-  const testPlayer = new Player("Hi", 0, 0);
-
-  // const resetPlayers = () => {
-  //   const new1, new2 =
-  // }
-
   const getOtherPlayerState = (playerID) => {
     if (playerID === 0) {
       return player2;
@@ -156,47 +132,6 @@ const LocalGameComponent = () => {
     }
   };
 
-  const shuffleDeck = (deckArray) => {
-    // Fisher-Yates (aka Knuth) Shuffle
-    const deckArrayCopy = [...deckArray];
-    let currentIndex = deckArray.length,
-      randomIndex;
-
-    // While elements exist to shuffle
-    while (currentIndex != 0) {
-      // Pick remaining element by random
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // Swap with current element
-      [deckArrayCopy[currentIndex], deckArrayCopy[randomIndex]] = [
-        deckArrayCopy[randomIndex],
-        deckArrayCopy[currentIndex],
-      ];
-    }
-
-    return deckArrayCopy;
-  };
-
-  const generateMainDeck = () => {
-    let out = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].flatMap((i) => [i, i, i, i]);
-    out = shuffleDeck(out);
-    return out;
-  };
-
-  const generateSideDeck = () => {
-    let out = [1, 2, 3, 4, 5, 6].flatMap((i) => [i, -i, i + 6]);
-    out.push(13, 100);
-    return out;
-  };
-
-  const generatePlayerDeck = () => {
-    let out = [...sideDeck];
-    out = shuffleDeck(out);
-    out = out.slice(0, 4);
-    return out;
-  };
-
   const playAgain = (message) => {
     if (window.confirm(`${message} Play again?`)) {
       return; // TODO
@@ -206,24 +141,24 @@ const LocalGameComponent = () => {
   };
 
   const newRound = () => {
-    setMainDeck(generateMainDeck());
-    resetPlayers();
+    setGame(game.prepNewRound());
   };
 
-  const resetRound = () => {
-    setMainDeck(generateMainDeck());
-    setSideDeck(generateSideDeck());
+  const resetGame = () => {
+    newGame.resetPlayers();
+    newGame.generateMainDeck();
+    newGame.mainDeck.shuffleCards();
   };
 
   // Create and shuffle main deck
   useEffect(() => {
-    resetRound();
+    resetGame();
   }, []);
 
-  const dealMainDeckCard = (numCardsPlayed, cardSum) => {
-    if (numCardsPlayed < 9 && cardSum < 20) {
+  const dealMainDeckCard = (cardSum) => {
+    if (mainDeck.playedCards.size < 9 && cardSum < 20) {
       const workingMainDeck = [...mainDeck];
-      const cardToDeal = workingMainDeck.pop();
+      const cardToDeal = workingMainDeck.playNextCard();
       setMainDeck(workingMainDeck);
       return cardToDeal;
     } else {
@@ -236,16 +171,14 @@ const LocalGameComponent = () => {
   // 1. Deal main deck card
   // 2. Play cards
   // 3. End turn
-
   if (gameStart) {
     if (!switchingTurns) {
       return (
         <PlayerComponent
           currentPlayer={currentPlayer}
           switchPlayer={switchPlayer}
-          generatePlayerDeck={generatePlayerDeck}
           dealMainDeckCard={dealMainDeckCard}
-          player={currentPlayer === 0 ? player1 : player2}
+          player={currentPlayer === 0 ? newPlayer1 : newPlayer2}
           setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
           getOtherPlayerState={getOtherPlayerState}
           local

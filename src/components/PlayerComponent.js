@@ -3,21 +3,20 @@ import Board from "./Board";
 import Card from "./CardComponent";
 
 const PlayerComponent = ({
+  player,
   currentPlayer,
   switchPlayer,
-  generatePlayerDeck,
   dealMainDeckCard,
-  player,
   setPlayer,
   getOtherPlayerState,
-  local
+  local,
 }) => {
   const [handDisabled, setHandDisabled] = useState(true);
   const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [numCardsPlayed, setNumCardsPlayed] = useState(0);
   const [handCardPlayed, setHandCardPlayed] = useState(false);
   const ID = player.id;
-  const playerDeck = generatePlayerDeck();
+  const sideDeck = player.sideDeck;
 
   // If cardSum === 20 {setStanding(true)}
 
@@ -147,7 +146,7 @@ const PlayerComponent = ({
 
       <h2>Player Deck</h2>
       <ul>
-        {playerDeck.map((i) => (
+        {sideDeck.getCards().map((card) => (
           <li>
             <Card
               handDisabled={
@@ -158,7 +157,7 @@ const PlayerComponent = ({
               }
               cardSum={player.cardSum}
               playCard={playHandCard}
-              cardNumber={i}
+              cardNumber={card.getValue()}
             />
           </li>
         ))}

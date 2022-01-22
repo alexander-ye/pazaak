@@ -5,14 +5,24 @@ export default class Deck {
     this.remainingCards = cards;
     this.playedCards = [];
   }
+  getCards() {
+    return this.cards;
+  }
   getSize() {
     return this.size;
+  }
+
+  playNextCard() {
+    const cardToPlay = this.cards.pop();
+    this.size = this.cards.length;
+    this.playedCards = [...this.playedCards, cardToPlay];
+    return cardToPlay;
   }
   shuffleCards() {
     // Fisher-Yates (aka Knuth) Shuffle
     const deckCopy = [...this.cards];
     let currentIndex = this.size;
-    randomIndex;
+    let randomIndex;
 
     // While elements exist to shuffle
     while (currentIndex != 0) {
