@@ -13,16 +13,11 @@ const PlayerComponent = ({
   local,
 }) => {
   const [handDisabled, setHandDisabled] = useState(true);
-  const [cardsPlayed, setCardsPlayed] = useState(
-    [0, 0, 0, 0, 0, 0, 0, 0, 0].flatMap((i) => [
-      new Card(0, null, false, "cardSlot", null),
-    ])
-  );
-  const [numCardsPlayed, setNumCardsPlayed] = useState(0);
   const [handCardPlayed, setHandCardPlayed] = useState(false);
   const [cardSumToDisplay, setCardSumToDisplay] = useState(player.cardSum);
   const ID = player.id;
   const sideDeck = player.sideDeck;
+  const hand = player.hand;
 
   // If cardSum === 20 {setStanding(true)}
   const setPlayerCardSum = (i) => {
@@ -35,7 +30,7 @@ const PlayerComponent = ({
     if (checkBust()) {
       console.log("Lose");
     } else {
-      const playerToModify = { ...player };
+      const playerToModify = player.clone();
       playerToModify.standing = true;
       setPlayer(playerToModify);
       switchPlayer();
@@ -55,22 +50,19 @@ const PlayerComponent = ({
   };
 
   const setCardOnBoard = (card) => {
-    const boardCards = [...cardsPlayed];
-    console.log(boardCards);
-    boardCards.splice(numCardsPlayed, 1, card);
-    console.log(boardCards);
-    setCardsPlayed(boardCards);
+    const boardCards = [...player.cardsPlayed];
+    boardCards.splice(player.numCardsPlayed, 1, card);
+    const out = player.clone();
+    out.cardsPlayed = boardCards;
+    out.numCardsPlayed = player.numCardsPlayed + 1;
+    out.cardSum = player.cardSum + card.value;
+    setPlayer(out);
+    return out.cardSum;
   };
 
   const playCard = (card) => {
-    setCardOnBoard(card);
     if (card.value !== 0) {
-      setNumCardsPlayed(numCardsPlayed + 1);
-      console.log(player.cardSum);
-      const newCardSum = player.cardSum + card.value;
-      console.log(newCardSum);
-      setPlayerCardSum(newCardSum);
-      console.log(player.cardSum);
+      const newCardSum = setCardOnBoard(card);
       setCardSumToDisplay(newCardSum);
     }
   };
@@ -90,14 +82,14 @@ const PlayerComponent = ({
   const turnLoop = () => {
     if (checkBust()) {
       // Stand and bust if over 20
-      const playerToModify = { ...player };
+      const playerToModify = player.clone();
       playerToModify.bust = true;
       playerToModify.standing = true;
       setPlayer(playerToModify);
       switchPlayer();
     } else if (check20()) {
       // Stand if 20
-      const playerToModify = { ...player };
+      const playerToModify = player.clone();
       playerToModify.standing = true;
       setPlayer(playerToModify);
       switchPlayer();
@@ -120,7 +112,7 @@ const PlayerComponent = ({
 
   useEffect(() => {
     if (check20()) {
-      const playerToModify = { ...player };
+      const playerToModify = player.clone();
       playerToModify.standing = true;
       setPlayer(playerToModify);
       if (!getOtherPlayerState(ID).standing) {
@@ -131,7 +123,7 @@ const PlayerComponent = ({
 
   return (
     <div>
-      <Board cardsPlayed={cardsPlayed} setCardsPlayed={setCardsPlayed} />
+      <Board cardsPlayed={player.cardsPlayed} />
       <h3>
         {cardSumToDisplay} || Other Player Card Sum:{" "}
         {getOtherPlayerState(ID).cardSum}
@@ -160,7 +152,7 @@ const PlayerComponent = ({
 
       <h2>Player Hand</h2>
       <ul>
-        {sideDeck.getCards().map((card) => (
+        {player.hand.map((card) => (
           <li>
             <CardComponent
               handDisabled={

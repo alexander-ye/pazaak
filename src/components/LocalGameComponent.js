@@ -157,6 +157,7 @@ const LocalGameComponent = () => {
   const dealMainDeckCard = (cardSum) => {
     if (mainDeck.playedCards.length < 9 && cardSum < 20) {
       const workingMainDeck = mainDeck.clone();
+      workingMainDeck.shuffleCards();
       const cardToDeal = workingMainDeck.playNextCard();
       setMainDeck(workingMainDeck);
       return cardToDeal;
@@ -180,7 +181,7 @@ const LocalGameComponent = () => {
           player={currentPlayer === 0 ? player1 : player2}
           setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
           getOtherPlayerState={getOtherPlayerState}
-          local
+          local={true}
         />
       );
     } else {

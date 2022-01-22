@@ -8,7 +8,11 @@ export default class Player {
     this.score = score;
     this.cardSum = cardSum;
     this.sideDeck = sideDeck;
-    this.hand = [];
+    this.hand = sideDeck;
+    this.cardsPlayed = [0, 0, 0, 0, 0, 0, 0, 0, 0].flatMap((i) => [
+      new Card(0, null, false, "cardSlot", null),
+    ]);
+    this.numCardsPlayed = 0;
     this.standing = false;
     this.bust = false;
     this.winRound = false;
