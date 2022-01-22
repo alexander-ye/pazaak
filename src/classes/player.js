@@ -1,6 +1,7 @@
 import Card from "./card";
 import Deck from "./deck";
 
+// TODO: SIDEDECK RANDOMIZES AND RERENDERS EVERY TIME!
 export default class Player {
   constructor(id, name, score, cardSum, sideDeck) {
     this.id = id;
