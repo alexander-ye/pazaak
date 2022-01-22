@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Board from "./Board";
-import Card from "./CardComponent";
+import CardComponent from "./CardComponent";
+import Card from "../classes/card";
 
 const PlayerComponent = ({
   player,
@@ -11,15 +12,19 @@ const PlayerComponent = ({
   getOtherPlayerState,
   local,
 }) => {
+  const emptyBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0].flatMap((i) => [
+    new Card(0, null, false, "cardSlot", null),
+  ]);
+
   const [handDisabled, setHandDisabled] = useState(true);
-  const [cardsPlayed, setCardsPlayed] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [cardsPlayed, setCardsPlayed] = useState(emptyBoard);
   const [numCardsPlayed, setNumCardsPlayed] = useState(0);
   const [handCardPlayed, setHandCardPlayed] = useState(false);
+  const [cardSumToDisplay, setCardSumToDisplay] = useState(player.cardSum);
   const ID = player.id;
   const sideDeck = player.sideDeck;
 
   // If cardSum === 20 {setStanding(true)}
-
   const setCardSum = (i) => {
     const playerToModify = { ...player };
     playerToModify.cardSum = i;
@@ -49,21 +54,27 @@ const PlayerComponent = ({
     }
   };
 
-  const setCardOnBoard = (cardVal) => {
+  const setCardOnBoard = (card) => {
     const boardCards = [...cardsPlayed];
-    boardCards.splice(numCardsPlayed, 1, cardVal);
+    console.log(boardCards);
+    boardCards.splice(numCardsPlayed, 1, card);
+    console.log(boardCards);
     setCardsPlayed(boardCards);
   };
 
-  const playCard = (cardVal) => {
-    setCardOnBoard(cardVal);
-    setNumCardsPlayed(numCardsPlayed + 1);
-    setCardSum(player.cardSum + cardVal);
+  const playCard = (card) => {
+    setCardOnBoard(card);
+    if (card.value !== 0) {
+      setNumCardsPlayed(numCardsPlayed + 1);
+      const newCardSum = player.cardSum + card.value;
+      setCardSum(player.cardSum);
+      setCardSumToDisplay(newCardSum);
+    }
   };
 
-  const playHandCard = (cardVal) => {
+  const playHandCard = (card) => {
     if (!handCardPlayed) {
-      playCard(cardVal);
+      playCard(card);
       setHandCardPlayed(true);
     }
   };
@@ -117,9 +128,12 @@ const PlayerComponent = ({
 
   return (
     <div>
-      <Board cardsPlayed={cardsPlayed} setCardsPlayed={setCardsPlayed} />
+      <Board
+        cardsPlayed={cardsPlayed || emptyBoard}
+        setCardsPlayed={setCardsPlayed}
+      />
       <h3>
-        {player.cardSum} || Other Player Card Sum:{" "}
+        {cardSumToDisplay} || Other Player Card Sum:{" "}
         {getOtherPlayerState(ID).cardSum}
       </h3>
       {/* End turn */}
@@ -144,11 +158,11 @@ const PlayerComponent = ({
         FORFEIT
       </button>
 
-      <h2>Player Deck</h2>
+      <h2>Player Hand</h2>
       <ul>
         {sideDeck.getCards().map((card) => (
           <li>
-            <Card
+            <CardComponent
               handDisabled={
                 handCardPlayed ||
                 player.standing ||
@@ -157,7 +171,7 @@ const PlayerComponent = ({
               }
               cardSum={player.cardSum}
               playCard={playHandCard}
-              cardNumber={card.getValue()}
+              cardObject={card}
             />
           </li>
         ))}

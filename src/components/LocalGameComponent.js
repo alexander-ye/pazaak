@@ -163,7 +163,7 @@ const LocalGameComponent = () => {
       return cardToDeal;
     } else {
       console.log("Cant deal");
-      return 0;
+      return new Card(0, null, false, "cardSlot", null);
     }
   };
 
