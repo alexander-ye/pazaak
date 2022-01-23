@@ -71,6 +71,7 @@ export default class Player {
     );
     out.hand = this.hand;
     out.cardsPlayed = this.cardsPlayed;
+    out.numCardsPlayed = this.numCardsPlayed;
     out.standing = this.standing;
     out.bust = this.bust;
     out.winRound = this.winRound;
