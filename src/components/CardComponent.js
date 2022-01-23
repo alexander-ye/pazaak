@@ -28,7 +28,7 @@ const CardComponent = ({
   const hiddenCardstyle = {
     width: "15px",
     height: "15px",
-    backgroundColor: "olive",
+    backgroundColor: "green",
     border: "3px solid green",
     margin: "2px",
   };
