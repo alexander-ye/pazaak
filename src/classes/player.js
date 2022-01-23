@@ -70,6 +70,7 @@ export default class Player {
       this.sideDeck
     );
     out.hand = this.hand;
+    out.cardsPlayed = this.cardsPlayed;
     out.standing = this.standing;
     out.bust = this.bust;
     out.winRound = this.winRound;

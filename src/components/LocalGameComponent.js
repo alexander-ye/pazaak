@@ -172,15 +172,35 @@ const LocalGameComponent = () => {
   if (gameStart) {
     if (!switchingTurns) {
       return (
-        <PlayerComponent
-          currentPlayer={currentPlayer}
-          switchPlayer={switchPlayer}
-          dealMainDeckCard={dealMainDeckCard}
-          player={currentPlayer === 0 ? player1 : player2}
-          setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
-          getOtherPlayerState={getOtherPlayerState}
-          local={true}
-        />
+        // <PlayerComponent
+        //   currentPlayer={currentPlayer}
+        //   switchPlayer={switchPlayer}
+        //   dealMainDeckCard={dealMainDeckCard}
+        //   player={currentPlayer === 0 ? player1 : player2}
+        //   setPlayer={currentPlayer === 0 ? setPlayer1 : setPlayer2}
+        //   getOtherPlayerState={getOtherPlayerState}
+        //   local={true}
+        // />
+        <div className="allBoardsContainer" style={allBoardsContainerStyle}>
+          <PlayerComponent
+            currentPlayer={currentPlayer}
+            switchPlayer={switchPlayer}
+            dealMainDeckCard={dealMainDeckCard}
+            player={player1}
+            setPlayer={setPlayer1}
+            getOtherPlayerState={getOtherPlayerState}
+            local={true}
+          />
+          <PlayerComponent
+            currentPlayer={currentPlayer}
+            switchPlayer={switchPlayer}
+            dealMainDeckCard={dealMainDeckCard}
+            player={player2}
+            setPlayer={setPlayer2}
+            getOtherPlayerState={getOtherPlayerState}
+            local={true}
+          />
+        </div>
       );
     } else {
       return (

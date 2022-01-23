@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Board from "./Board";
 import CardComponent from "./CardComponent";
 import Card from "../classes/card";
+import PlayerHandComponent from "./PlayerHandComponent";
 
 const PlayerComponent = ({
   player,
@@ -48,14 +49,27 @@ const PlayerComponent = ({
   };
 
   const setCardOnBoard = (card) => {
+    // Change player board
     const boardCards = [...player.cardsPlayed];
     boardCards.splice(player.numCardsPlayed, 1, card);
     const out = player.clone();
     out.cardsPlayed = boardCards;
     out.numCardsPlayed = player.numCardsPlayed + 1;
     out.cardSum = player.cardSum + card.value;
+    // Disable card
+    out.hand = out.hand.map((c) =>
+      c.id === card.id ? card.cloneAsPlayed() : c
+    );
     setPlayer(out);
     return out.cardSum;
+  };
+
+  const switchCardSign = (card) => {
+    const playerClone = player.clone();
+    playerClone.hand = playerClone.hand.map((c) =>
+      card.id === c.id ? c.cloneSignSwitched() : c
+    );
+    setPlayer(playerClone);
   };
 
   const playCard = (card) => {
@@ -122,10 +136,7 @@ const PlayerComponent = ({
   return (
     <div>
       <Board cardsPlayed={player.cardsPlayed} />
-      <h3>
-        {cardSumToDisplay} || Other Player Card Sum:{" "}
-        {getOtherPlayerState(ID).cardSum}
-      </h3>
+      <h3>{cardSumToDisplay}</h3>
       {/* End turn */}
       <button
         onClick={turnLoop}
@@ -147,25 +158,18 @@ const PlayerComponent = ({
       <button disabled={player.standing || currentPlayer !== ID}>
         FORFEIT
       </button>
-
-      <h2>Player Hand</h2>
-      <ul>
-        {player.hand.map((card) => (
-          <li>
-            <CardComponent
-              handDisabled={
-                handCardPlayed ||
-                player.standing ||
-                handDisabled ||
-                currentPlayer !== ID
-              }
-              cardSum={player.cardSum}
-              playCard={playHandCard}
-              cardObject={card}
-            />
-          </li>
-        ))}
-      </ul>
+      <PlayerHandComponent
+        hidden={currentPlayer !== ID}
+        player={player}
+        handDisabled={
+          handCardPlayed ||
+          player.standing ||
+          handDisabled ||
+          currentPlayer !== ID
+        }
+        playHandCard={playHandCard}
+        switchCardSign={switchCardSign}
+      />
     </div>
   );
 };

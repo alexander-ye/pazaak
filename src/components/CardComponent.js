@@ -6,44 +6,57 @@ const CardComponent = ({
   playCard,
   cardNumber,
   cardObject,
+  hidden,
+  cardPlayed,
+  switchCardSign,
 }) => {
-  const [card, setCard] = useState(cardObject);
-  const [played, setPlayed] = useState(false);
-
+  const card = cardObject;
   const logCard = () => {
     console.log(card);
   };
 
   const useCard = () => {
-    if (!played) {
-      logCard();
-      setPlayed(true);
-      playCard(card);
+    if (!cardPlayed) {
+      playCard(cardObject);
     }
   };
 
   const switchSign = () => {
-    console.log(card.signSwitchable);
-    if (card.signSwitchable) {
-      const out = { ...card };
-      out.value = -card.value;
-      if (card.sign === "plus") {
-        out.sign = "minus";
-      } else {
-        out.sign = "plus";
-      }
-      setCard(out);
-    }
+    switchCardSign(cardObject);
   };
 
-  if (card.signSwitchable) {
+  const hiddenCardstyle = {
+    width: "15px",
+    height: "15px",
+    backgroundColor: "olive",
+    border: "3px solid green",
+    margin: "2px",
+  };
+
+  const hiddenPlayedCardstyle = {
+    width: "15px",
+    height: "15px",
+    backgroundColor: "gray",
+    border: "3px solid black",
+    margin: "2px",
+  };
+
+  if (hidden) {
+    if (cardPlayed) {
+      return (
+        <div className="hiddenPlayedCard" style={hiddenPlayedCardstyle}></div>
+      );
+    } else {
+      return <div className="hiddenCard" style={hiddenCardstyle}></div>;
+    }
+  } else if (card.signSwitchable) {
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={useCard} disabled={played || handDisabled}>
+        <button onClick={useCard} disabled={cardPlayed || handDisabled}>
           {card.value}
         </button>
-        <button onClick={switchSign} disabled={played || handDisabled}>
+        <button onClick={switchSign} disabled={cardPlayed || handDisabled}>
           SWITCH
         </button>
       </div>
@@ -52,7 +65,7 @@ const CardComponent = ({
     return (
       <div className="pazaakCard">
         {/* <p className="pazaakCardNumber">{value}</p> */}
-        <button onClick={useCard} disabled={played || handDisabled}>
+        <button onClick={useCard} disabled={cardPlayed || handDisabled}>
           {card.value}
         </button>
       </div>
