@@ -16,8 +16,6 @@ const PlayerComponent = ({
   const [handCardPlayed, setHandCardPlayed] = useState(false);
   const [cardSumToDisplay, setCardSumToDisplay] = useState(player.cardSum);
   const ID = player.id;
-  const sideDeck = player.sideDeck;
-  const hand = player.hand;
 
   // If cardSum === 20 {setStanding(true)}
   const setPlayerCardSum = (i) => {

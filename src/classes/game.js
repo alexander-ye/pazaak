@@ -35,6 +35,13 @@ export default class Game {
     this.resetPlayers();
     this.generateMainDeck();
   }
+
+  clone() {
+    const out = new Game();
+    out.players = this.players;
+    out.mainDeck = this.mainDeck;
+    return out;
+  }
 }
 
 const winConditions = () => {

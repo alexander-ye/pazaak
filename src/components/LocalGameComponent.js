@@ -53,20 +53,9 @@ const LocalGameComponent = () => {
   // Player states
   const [player1, setPlayer1] = useState(new Player(0, "Player 1", 0, 0, []));
   const [player2, setPlayer2] = useState(new Player(1, "Player 2", 0, 0, []));
-  player1.generateSideDeck();
-  player1.generateHand();
-  player2.generateSideDeck();
-  player2.generateHand();
-
-  const newGame = new Game();
-  newGame.generateMainDeck();
-  newGame.players = [player1, player2];
 
   // Game
-  const [game, setGame] = useState(newGame);
-
-  // Decks
-  const [mainDeck, setMainDeck] = useState(game.getMainDeck());
+  const [game, setGame] = useState(new Game());
 
   const pickWinner = (player) => {
     setRoundWinner(`Player ${player.id + 1}`);
@@ -143,23 +132,32 @@ const LocalGameComponent = () => {
     setGame(game.prepNewRound());
   };
 
-  const resetGame = () => {
-    newGame.resetPlayers();
-    newGame.generateMainDeck();
-    newGame.mainDeck.shuffleCards();
-  };
+  const resetGame = () => {};
 
   // Create and shuffle main deck
   useEffect(() => {
-    resetGame();
+    const gameStart = game.clone();
+    gameStart.players = [player1, player2];
+    gameStart.generateMainDeck();
+    setGame(gameStart);
+    const player1Start = player1.clone();
+    player1Start.generateSideDeck();
+    player1Start.generateHand();
+    const player2Start = player2.clone();
+    player2Start.generateSideDeck();
+    player2Start.generateHand();
+    setPlayer1(player1Start);
+    setPlayer2(player2Start);
   }, []);
 
   const dealMainDeckCard = (cardSum) => {
-    if (mainDeck.playedCards.length < 9 && cardSum < 20) {
-      const workingMainDeck = mainDeck.clone();
+    if (game.mainDeck.playedCards.length < 9 && cardSum < 20) {
+      const workingMainDeck = game.mainDeck.clone();
       workingMainDeck.shuffleCards();
       const cardToDeal = workingMainDeck.playNextCard();
-      setMainDeck(workingMainDeck);
+      const gameClone = game.clone();
+      gameClone.mainDeck = workingMainDeck;
+      setGame(gameClone);
       return cardToDeal;
     } else {
       console.log("Cant deal");
