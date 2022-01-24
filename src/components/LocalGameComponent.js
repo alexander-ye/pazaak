@@ -98,29 +98,13 @@ const LocalGameComponent = () => {
     }
   }, [roundWinner, tie]);
 
-  useEffect(() => {
-    if (setOver) {
-      if (window.confirm(`${roundWinner} wins! Refresh to play again!`)) {
-        console.log(`${roundWinner} win`);
-        // setGameStart(false);
-        // setGame(new Game());
-        // setPlayer1(new Player(0, "Player 1", 0, 0, []));
-        // setPlayer2(new Player(1, "Player 2", 0, 0, []));
-        // const newGameStart = game.clone();
-        // newGameStart.players = [player1, player2];
-        // newGameStart.generateMainDeck();
-        // setGame(newGameStart);
-        // const player1Start = player1.clone();
-        // player1Start.generateSideDeck();
-        // player1Start.generateHand();
-        // const player2Start = player2.clone();
-        // player2Start.generateSideDeck();
-        // player2Start.generateHand();
-        // setPlayer1(player1Start);
-        // setPlayer2(player2Start);
-      }
-    }
-  }, [setOver]);
+  // useEffect(() => {
+  //   if (setOver) {
+  //     if (window.confirm(`${roundWinner} wins! Refresh to play again!`)) {
+  //       console.log(`${roundWinner} win`);
+  //     }
+  //   }
+  // }, [setOver]);
 
   const getOtherPlayerState = (playerID) => {
     if (playerID === 0) {
@@ -193,6 +177,9 @@ const LocalGameComponent = () => {
       return (
         <div>
           <h1>PAZAAK</h1>
+          <h3>
+            {setOver ? `${roundWinner} wins! Refresh to play again!` : ``}
+          </h3>
           <div className="allBoardsContainer" style={allBoardsContainerStyle}>
             <PlayerComponent
               currentPlayer={currentPlayer}
