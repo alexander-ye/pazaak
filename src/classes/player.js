@@ -38,6 +38,7 @@ export default class Player {
     this.standing = false;
     this.bust = false;
     this.winRound = false;
+    this.setScore = 0;
   }
   roundReset() {
     this.cardSum = 0;
@@ -75,6 +76,7 @@ export default class Player {
     out.standing = this.standing;
     out.bust = this.bust;
     out.winRound = this.winRound;
+    out.setScore = this.setScore;
     return out;
   }
 }
