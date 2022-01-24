@@ -8,8 +8,13 @@ const allBoardsContainerStyle = {
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
-  marginLeft: "5%",
-  marginRight: "5%",
+  marginLeft: "auto",
+  marginRight: "auto",
+  maxWidth: "800px",
+};
+
+const centerTextStyle = {
+  textAlign: "center",
 };
 
 const LocalGameComponent = () => {
@@ -141,8 +146,8 @@ const LocalGameComponent = () => {
     if (!switchingTurns) {
       return (
         <div>
-          <h1>PAZAAK</h1>
-          <h3>
+          <h1 style={centerTextStyle}>PAZAAK</h1>
+          <h3 style={centerTextStyle}>
             {setOver ? `${roundWinner} wins! Refresh to play again!` : ``}
           </h3>
           <div className="allBoardsContainer" style={allBoardsContainerStyle}>
