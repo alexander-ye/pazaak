@@ -1,29 +1,8 @@
 import React, { useState, useEffect } from "react";
-import CardComponent from "./CardComponent";
 import PlayerComponent from "./PlayerComponent";
-import DeckComponent from "./DeckComponent";
 import Card from "../classes/card";
 import Game from "../classes/game";
 import Player from "../classes/player";
-
-// TODOS:
-// ROUNDS
-// Outscore: 20 or under, greater than opponent
-// Tie: both players same pts
-// Bust: over 20 after turn
-// Fill table: 9 cards on table without busting, autowin
-// Tiebreaker
-// First to 3 sets
-// Side deck: 10 unique cards player chooses before match
-// Four cards of side deck chosen at random for player
-// Plus cards: 1-6 pts
-// Minus cards: 1-6 pts
-// Plus/minus cards: 1-6 pts
-// +/- 1 or 2 card
-// Flip card: change signs of written number of all cards on player's table
-// 2&4, 3&6
-// Double Card: double value of player's last played card
-// Tiebreaker card: +/-1 card, tiebreaker
 
 const allBoardsContainerStyle = {
   display: "flex",
@@ -122,20 +101,6 @@ const LocalGameComponent = () => {
       setCurrentPlayer(0);
     }
   };
-
-  const playAgain = (message) => {
-    if (window.confirm(`${message} Play again?`)) {
-      return; // TODO
-    } else {
-      return;
-    }
-  };
-
-  const newRound = () => {
-    setGame(game.prepNewRound());
-  };
-
-  const resetGame = () => {};
 
   // Create and shuffle main deck
   useEffect(() => {

@@ -155,9 +155,15 @@ const PlayerComponent = ({
         STAND
       </button>
       {/* Forfeit game */}
-      <button disabled={player.standing || currentPlayer !== ID}>
+      {/* <button
+        onClick={() => {
+          stand();
+          // TODO
+        }}
+        disabled={player.standing || currentPlayer !== ID}
+      >
         FORFEIT
-      </button>
+      </button> */}
       <PlayerHandComponent
         hidden={currentPlayer !== ID}
         player={player}
