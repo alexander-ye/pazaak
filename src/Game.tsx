@@ -2,96 +2,24 @@ import React, { createContext, CSSProperties, useCallback, useEffect, useMemo, u
 import Board from './components/Board/Board';
 import Hand from './components/Hand/Hand';
 import { card } from './types';
-import { createMainDeck, shuffleCards } from './utils/cards';
+import { MAIN_DECK_ALL_CARDS, shuffleCards, TEST_HAND } from './utils/cards';
+import { createPlayer } from './utils/player';
 
-
-const mainDeck: card[] = createMainDeck();
-const sideDeck: card[] = [1, 2, 3, 4, 5, 6].flatMap(i => [-i, i]).map((value) => {
-  return {
-    sign: value > 0 ? 'PLUS' : 'MINUS',
-    value,
-    type: 'NORMAL'
-  }
-});
-const specialCards = [
-  {
-    sign: 'ZERO',
-    value: 0,
-    type: 'FLIP',
-    flipValues: [2, 4]
-  },
-  {
-    sign: 'ZERO',
-    value: 0,
-    type: 'FLIP',
-    flipValues: [3,6]
-  },
-  {
-    sign: 'ZERO',
-    value: 0,
-    type: 'TIEBREAKER'
-  }
-]
-
-const GameContext = createContext({});
-
-const Game = () => {
-  // const rulesOfTheGame = ```
-  // Pazaak used two decks.
-
-  // The Main Deck consisted of four sets of cards numbered 1 to 10.
-
-  // The Side Deck consisted of ten unique cards the player chose before the match.
-
-  // At the start of each game, four of these cards were chosen at random for the player to keep
-  // in their hand and play at any time they desired.
-  // ```
-  // points: number of rounds won
-  // score: cards add up to this number this round
-  // stand: player standing?
-  // cards played: if 9, board is filled and can't fill anymore
-  
+const Game = () => {  
   const [currentPlayerId, setCurrentPlayerId] = useState<string>('player1');
   const [players, setPlayers] = useState({
-    player1: {
-      name: 'player1',
-      points: 0,
-      score: 0,
-      stand: false,
-      hand: [null, null, null, null],
-      bot: false,
-    },
-    player2: {
-      name: 'player2',
-      points: 0,
-      score: 0,
-      stand: false,
-      hand: [null, null, null, null],
-      bot: false,
-    }
+    player1: createPlayer('player1'),
+    player2: createPlayer('player2')
   });
 
-  const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(mainDeck)
+  const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS)
 
   const resetGame = useCallback(() => {
-    setPlayers({player1: {
-      name: 'player1',
-      points: 0,
-      score: 0,
-      stand: false,
-      hand: [null, null, null, null],
-      bot: false,
-    },
-    player2: {
-      name: 'player2',
-      points: 0,
-      score: 0,
-      stand: false,
-      hand: [null, null, null, null],
-      bot: false,
-    }});
+    setPlayers({
+      player1: createPlayer('player1'),
+      player2: createPlayer('player2')
+  });
     setCurrentPlayerId('player1');
-    shuffleCards(mainDeck);
     setShuffledMainDeck(shuffleCards(shuffledMainDeck))
   }, [shuffledMainDeck]);
 
@@ -99,6 +27,7 @@ const Game = () => {
 
   return <div className={`game-container`} style={styles.boardsContainer}>
     {Object.entries(players).map(([key, player]) => {
+      // TODO: Implement play card + switch turns
       return <div key={key} style={{display: 'flex', flexDirection: 'column'}}>
         <Board 
           player={player} 
@@ -106,7 +35,7 @@ const Game = () => {
           shuffledMainDeck={shuffledMainDeck} 
           mainDeckIndex={mainDeckIndex} 
           setMainDeckIndex={setMainDeckIndex} />
-        <Hand hand={player.hand} />
+        <Hand hand={TEST_HAND} />
         </div>
     })}
   </div>
@@ -121,5 +50,3 @@ const styles: {[key: string]: CSSProperties} = {
     flexDirection: 'row'
   }
 }
-
-// https://starwars.fandom.com/wiki/Pazaak/Legends
