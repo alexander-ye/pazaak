@@ -95,7 +95,7 @@ export const checkForRoundWinner = (players: player[], currentPlayerIndex: numbe
   if (player0CardSum > 20 && (currentPlayerIndex !== 0 || !player0HasCardsLeft)) {
     return 1;
   }
-  if (player1CardSum > 20 && currentPlayerIndex !== 1 || !player1HasCardsLeft) {
+  if (player1CardSum > 20 && (currentPlayerIndex !== 1 || !player1HasCardsLeft)) {
     return 0;
   }
   if (players[0]?.stand && players[1]?.stand) {

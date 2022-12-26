@@ -1,19 +1,28 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import Board from './components/Board/Board';
 import { card, player } from './types';
-import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards } from './utils/cards';
+import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from './utils/cards';
 import { createPlayer, checkForRoundWinner, checkForWinner } from './utils/player';
 import _ from 'lodash';
 
-// TODO: UX for ending a turn---don't play card if someone wins!
+// TODO: Need to sequence functions so things happen in order and bugs don't occur
+// e.g. switching player board & playing card even on victory screen
 const Game = () => {  
+  // Game state
   const [roundWinnerIndex, setRoundWinnerIndex] = useState<number>(NaN);
   const [gameWinnerIndex, setGameWinnerIndex] = useState<number>(NaN);
+  const roundContinues: boolean = useMemo(() => {
+    return isNaN(roundWinnerIndex) && isNaN(gameWinnerIndex)}, 
+    [roundWinnerIndex, gameWinnerIndex]);
+    
   const [newRound, setNewRound] = useState<boolean>(true);
 
+  // Players
+  const [players, setPlayers] = useState<player[]>([]);
   const [playerIndex, setPlayerIndex] = useState<number>(0);
   const nextPlayerIndex: number = (playerIndex + 1) % 2;
-  const [players, setPlayers] = useState<player[]>([]);
+
+  // Decks
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
 
@@ -30,14 +39,22 @@ const Game = () => {
   const resetRound = useCallback((i: number = NaN) => {
     // TODO: Draw card for losing player
     if (players.length) {
+      let gameWon: boolean = false;
       if (i !== -1) {
         setPlayers(players.map((player: player, index: number) => {
           const updatedPlayer = {...player, board: CLEAR_BOARD, stand: false};
           if (index === i) {
             updatedPlayer.score += 1
           }
+          if (updatedPlayer.score === 3) {
+            gameWon = true;
+          }
           return updatedPlayer;
         }))
+        // Prevent drawing card if game is won
+        if (gameWon) {
+          return
+        }
         // Draw card for losing player
         setPlayerIndex(i === 0 ? 1 : 0);
       } else {
@@ -131,44 +148,87 @@ const Game = () => {
   }
 
   return <div className={`table`} style={styles.boardsContainer}>
+      <dialog open={!roundContinues}
+        style={{
+          width: '600px',
+          height: '400px',
+          position: 'fixed',
+          top: '50%',
+          left:' 50%',
+          transform: 'translateX(-50%) translateY(-50%)',
+          zIndex: 1
+       }}
+      >
+        {!isNaN(gameWinnerIndex) 
+        ? <div>
+            <p>{gameWinnerIndex} wins game</p>
+            <button onClick={resetGame}>OK</button>
+          </div>
+        : <div>
+            <p>{roundWinnerIndex} wins round</p>
+            <button onClick={() => {
+              if (isNaN(gameWinnerIndex)) {
+                resetRound(roundWinnerIndex)
+              }}}>OK</button>
+          </div>
+        }
+      </dialog>
     {players.map((player: player, index: number) => {
-      const isPlayersTurn: boolean = index === playerIndex;
+      const isPlayersTurn: boolean = index === playerIndex && roundContinues;
       const otherPlayerIndex: number = (index + 1) % 2;
+
       const stand = () => {
         const playerToModify = {...players[index], stand: true};
         const out = [...players];
         out[index] =  playerToModify;
-        setPlayers(out);  
+        setPlayers(out);
         if (!players[otherPlayerIndex].stand) {
           switchPlayer()
         }
       }
-      return <div key={player.name} style={{display: 'flex', flexDirection: 'column'}}>
+
+      const cardScore: number = sumCardValues(player.board);
+
+      const boardDisabled: boolean = 
+        !roundContinues || 
+        !isPlayersTurn || 
+        player.stand || 
+        player.board.indexOf(null) === -1;
+
+      const endTurn = () => {
+        if (cardScore > 20) {
+          setRoundWinnerIndex(otherPlayerIndex);
+          return; 
+        }
+        if (players[otherPlayerIndex].stand) {
+          if (cardScore < 20) {
+            playHouseCard();
+          } else {
+            stand();
+          }
+        } else {
+          if (cardScore > 19) { 
+            stand();
+          } else {
+            switchPlayer()
+          }
+        }
+      }
+
+      return <div key={player.name} style={{display: 'flex', flexDirection: 'row', margin: 'auto'}}>
         <Board 
-          player={player} 
+          playerIndex={index}
+          player={player}
+          cardScore={cardScore}
           isPlayersTurn={isPlayersTurn}
-          switchPlayer={switchPlayer}
           stand={stand}
-          opponentStanding={players[otherPlayerIndex].stand}
+          endTurn={endTurn}
           playHouseCard={playHouseCard}
           playHandCard={playHandCard}
-          victoryScreen={!isNaN(roundWinnerIndex) || !isNaN(gameWinnerIndex)}
+          disabled={boardDisabled}
         />   
         </div>
     })}
-    <dialog open={!isNaN(roundWinnerIndex) || !isNaN(gameWinnerIndex)}>
-      {!isNaN(gameWinnerIndex) 
-      ? <div>
-          <p>{gameWinnerIndex} wins game</p>
-          <button onClick={resetGame}>OK</button>
-        </div>
-      : <div>
-          <p>{roundWinnerIndex} wins round</p>
-          <button onClick={() => {resetRound(roundWinnerIndex)}}>OK</button>
-        </div>
-      }
-      
-    </dialog>
     {/* <button disabled={!bothPlayersStanding} onClick={resetGame}>Reset Game</button> */}
   </div>
 }
@@ -179,6 +239,7 @@ const styles: {[key: string]: CSSProperties} = {
   boardsContainer: {
     margin: 'auto',
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    position: 'relative'
   }
 }

@@ -1,53 +1,31 @@
 import React, { CSSProperties, useEffect} from 'react';
-import { card, player } from '../../types';
-import { sumCardValues, TEST_HAND } from '../../utils/cards';
+import { card, player} from '../../types';
 import Card from '../Card/Card';
 
 const Board = ({
-  player, 
+  playerIndex,
+  player,
+  cardScore,
   isPlayersTurn, 
-  switchPlayer, 
   stand,
-  opponentStanding,
+  endTurn,
   playHouseCard,
   playHandCard,
-  victoryScreen
+  disabled,
   }: {
+    playerIndex: number,
     player: player,
+    cardScore: number,
     isPlayersTurn: boolean,
-    switchPlayer: any,
     stand: any,
-    opponentStanding: boolean,
+    endTurn: any,
     playHouseCard: any,
     playHandCard: any,
-    victoryScreen: any
+    disabled: boolean,
   }) => {
-  const cardScore: number = sumCardValues(player.board); 
- 
-  const canInteract: boolean = 
-    !victoryScreen &&
-    isPlayersTurn && 
-    !player.stand && 
-    (player.board.indexOf(null) !== -1 || cardScore < 20);
-
-  const endTurn = () => {
-    if (opponentStanding) {
-      if (cardScore < 20) {
-        playHouseCard();
-      } else {
-        stand();
-      }
-    } else {
-      if (cardScore > 19) {
-        stand();
-      } else {
-        switchPlayer()
-      }
-    }}
-
   useEffect(() => {
+    // On turn start
     if (isPlayersTurn) {
-      // On turn start
       playHouseCard();
     }
   }, [isPlayersTurn]);
@@ -58,15 +36,34 @@ const Board = ({
     }
   }, [cardScore]);
 
+  const {name, board, hand, score}: any = player;
+
   return (
   <div className={`table`}>
     <div className='board-container' style={styles.boardContainer}>
-      <h2>{player.name}</h2>
-      <h3>{player.score}</h3>
+      <div style={{display: 'flex', flexDirection: playerIndex === 0 ? 'row' : 'row-reverse', justifyContent: 'space-between', border: '2px solid red'}}>
+        <div style={{display: 'flex', flexDirection: 'column', position: 'absolute',
+          left: playerIndex === 0 ? '-36px' : 'auto',
+          right: playerIndex === 0 ? 'auto' : '-36px',
+          alignItems: 'center',
+      }}>
+        <div style={{
+          width: '28px',
+          height: '28px',
+          borderRadius: '28px',
+          backgroundColor: isPlayersTurn ? 'red' : 'brown',
+          marginBottom: '4px'
+      }}/>
+        <GameScore playerScore={score} />
+        </div>
+
+      <h2>{name}</h2>
+      <h3>{cardScore}</h3>
+      </div>
       {/* Played cards */}
       <div className='cards-container' style={styles.cardsContainer}>
-        {player.board.map((card: card | null, index: number) => {
-          return <Card key={`card-slot-${index}`} card={card} />
+        {board.map((card: card | null, index: number) => {
+          return <Card key={`card-slot-${index}`} card={card} style={{border: `2px solid ${card === null ? 'pink' : card?.deck === 'MAIN' ? 'blue' : 'springgreen'}`}} />
         })}
       </div>
     </div>
@@ -74,15 +71,15 @@ const Board = ({
     <p>{cardScore}</p>
     {/* Hand */}
     <div style={{display: 'flex', flexDirection: 'row'}}>
-      {player.hand.map((card: card) => {
-        return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={canInteract}/>
+      {hand.map((card: card) => {
+        return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={!disabled}/>
       })}
     </div>
     <div style={{display: 'flex', flexDirection: 'row'}}>
       <button 
         onClick={endTurn} 
-        disabled={!canInteract}>End Turn</button>
-      <button onClick={() => stand()} disabled={!canInteract}>Stand</button>
+        disabled={disabled}>End Turn</button>
+      <button onClick={() => stand()} disabled={disabled}>Stand</button>
     </div>
   </div>
 )}
@@ -93,9 +90,30 @@ const styles: {[key: string]: CSSProperties} = {
   boardContainer: {
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative'
   },
   cardsContainer: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(3, 1fr)',
+    gridTemplateColumns: 'repeat(3, 102px)',
+    gridTemplateRows: 'repeat(3, 162px)',
+    justifyContent: 'center',
+    gridGap: '0px',
+    border: '2px solid pink'
   }
+}
+
+const GameScore = ({playerScore= 0}: {playerScore: number}) => {
+  return <div style={{display: 'flex', flexDirection: 'column'}}>
+    {[1, 2, 3].map((i: number) => {
+      return <div 
+        style={{
+          margin: '8px 6px',
+          width: '20px',
+          height: '20px',
+          borderRadius: '20px',
+          backgroundColor: i <= playerScore ? 'green' : 'brown'
+        }}
+      />
+    })}
+  </div>
 }
