@@ -5,29 +5,29 @@ import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards } from './utils/cards';
 import { createPlayer, checkForRoundWinner, checkForWinner } from './utils/player';
 import _ from 'lodash';
 
+// TODO: UX for ending a turn---don't play card if someone wins!
 const Game = () => {  
+  const [roundWinnerIndex, setRoundWinnerIndex] = useState<number>(NaN);
+  const [gameWinnerIndex, setGameWinnerIndex] = useState<number>(NaN);
+  const [newRound, setNewRound] = useState<boolean>(true);
+
   const [playerIndex, setPlayerIndex] = useState<number>(0);
   const nextPlayerIndex: number = (playerIndex + 1) % 2;
   const [players, setPlayers] = useState<player[]>([]);
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
-  const [newRound, setNewRound] = useState<boolean>(true);
-
-  // State so board renders before winner popup
-  const [roundWinningIndex, setRoundWinningIndex] = useState<number>(NaN);
-  const [gameWinningIndex, setGameWinningIndex] = useState<number>(NaN);
 
   const resetGame = useCallback(() => {
     setShuffledMainDeck(shuffleCards(shuffledMainDeck));
     setMainDeckIndex(0);
-    setGameWinningIndex(NaN);
+    setGameWinnerIndex(NaN);
     resetRound();
   }, []);
 
   /**
    * @i index of winning player
    */
-  const resetRound = useCallback((i?: number) => {
+  const resetRound = useCallback((i: number = NaN) => {
     // TODO: Draw card for losing player
     if (players.length) {
       if (i !== -1) {
@@ -55,16 +55,16 @@ const Game = () => {
       setShuffledMainDeck(shuffleCards(shuffledMainDeck));
       setPlayerIndex(0);
     }
+    setRoundWinnerIndex(NaN);
     setNewRound(true);
-    setRoundWinningIndex(NaN);
   }, [players, shuffledMainDeck]);
 
   useEffect(() => {
-    if (players.length && newRound) {
+    if (players.length && isNaN(gameWinnerIndex) && newRound) {
       playHouseCard();
       setNewRound(false);
     }
-  }, [newRound, playerIndex])
+  }, [gameWinnerIndex, newRound, playerIndex])
 
   const switchPlayer = () => {
     setPlayerIndex(nextPlayerIndex);
@@ -83,6 +83,7 @@ const Game = () => {
     }
   }, [mainDeckIndex]);
 
+  // Check for game and round winner
   useEffect(() => {
     if (players.length) {
       const gameWinningPlayerIndex = checkForWinner(players);
@@ -91,35 +92,13 @@ const Game = () => {
         if (isNaN(roundWinningPlayerIndex)) {
           return
         } else {
-          setRoundWinningIndex(roundWinningPlayerIndex);
+          setRoundWinnerIndex(roundWinningPlayerIndex);
         }
       } else {
-        setGameWinningIndex(gameWinningPlayerIndex);
+        setGameWinnerIndex(gameWinningPlayerIndex);
       }
     }
   }, [players])
-
-  useEffect(() => {
-    if (isNaN(roundWinningIndex)) {
-      return;
-    }
-    if (roundWinningIndex === -1) {
-      window.alert('TIE');
-      resetRound();
-    } else {
-      window.alert(`Round winner index is ${roundWinningIndex}`);
-      resetRound(roundWinningIndex)
-    }
-  }, [roundWinningIndex])
-
-  useEffect(() => {
-    if (isNaN(gameWinningIndex)) {
-      return;
-    }
-    // Window alerts occur before the appropriate render...
-    window.alert(`Player index ${gameWinningIndex} wins`);
-    resetGame();
-  }, [gameWinningIndex])
 
   useEffect(() => {
     resetRound()
@@ -156,17 +135,14 @@ const Game = () => {
       const isPlayersTurn: boolean = index === playerIndex;
       const otherPlayerIndex: number = (index + 1) % 2;
       const stand = () => {
-        // TODO: Check win conditions here for UX (autowin if other player < 21, this player < other player)
         const playerToModify = {...players[index], stand: true};
         const out = [...players];
         out[index] =  playerToModify;
-        setPlayers(out);
-        // But: won't detect bust
+        setPlayers(out);  
         if (!players[otherPlayerIndex].stand) {
           switchPlayer()
         }
       }
-
       return <div key={player.name} style={{display: 'flex', flexDirection: 'column'}}>
         <Board 
           player={player} 
@@ -176,9 +152,23 @@ const Game = () => {
           opponentStanding={players[otherPlayerIndex].stand}
           playHouseCard={playHouseCard}
           playHandCard={playHandCard}
+          victoryScreen={!isNaN(roundWinnerIndex) || !isNaN(gameWinnerIndex)}
         />   
         </div>
     })}
+    <dialog open={!isNaN(roundWinnerIndex) || !isNaN(gameWinnerIndex)}>
+      {!isNaN(gameWinnerIndex) 
+      ? <div>
+          <p>{gameWinnerIndex} wins game</p>
+          <button onClick={resetGame}>OK</button>
+        </div>
+      : <div>
+          <p>{roundWinnerIndex} wins round</p>
+          <button onClick={() => {resetRound(roundWinnerIndex)}}>OK</button>
+        </div>
+      }
+      
+    </dialog>
     {/* <button disabled={!bothPlayersStanding} onClick={resetGame}>Reset Game</button> */}
   </div>
 }

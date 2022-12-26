@@ -102,6 +102,12 @@ export const checkForRoundWinner = (players: player[], currentPlayerIndex: numbe
     if (player0CardSum === player1CardSum) {
       return tiebreaker;
     }
+    if (player1CardSum > 20) {
+      return 0;
+    }
+    if (player0CardSum > 20) {
+      return 1;
+    }
     if (player0CardSum > player1CardSum) {
       return 0;
     }
