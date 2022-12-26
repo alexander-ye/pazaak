@@ -1,25 +1,30 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import Board from './components/Board/Board';
 import { card, player } from './types';
-import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards } from './utils/cards';
+import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from './utils/cards';
 import { determineWinnerIndex, createPlayer, checkPlayerFilledBoard, checkBust } from './utils/player';
 
 const Game = () => {  
   const [playerIndex, setPlayerIndex] = useState<number>(0);
+  const nextPlayerIndex: number = (playerIndex + 1) % 2;
   const [players, setPlayers] = useState<player[]>([]);
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
   const [newRound, setNewRound] = useState<boolean>(true);
+  const [winnerIndex, setWinnerIndex] = useState<number>(-1);
 
   const resetGame = useCallback(() => {
     setShuffledMainDeck(shuffleCards(shuffledMainDeck));
     setMainDeckIndex(0);
   }, []);
 
+  /**
+   * @i index of winning player
+   */
   const resetRound = useCallback((i?: number) => {
     // TODO: Draw card for losing player
     if (players.length) {
-      if (i === 0 || i === 1) {
+      if (i !== -1) {
         setPlayers(players.map((player: player, index: number) => {
           const updatedPlayer = {...player, board: CLEAR_BOARD, stand: false};
           if (index === i) {
@@ -49,20 +54,13 @@ const Game = () => {
 
   useEffect(() => {
     if (players.length && newRound) {
-      console.log("datadatos")
       playHouseCard();
       setNewRound(false);
     }
   }, [newRound, playerIndex])
 
-
   const switchPlayer = () => {
-    const otherPlayerIndex: number = (playerIndex + 1) % 2;
-    if (checkBust(players, playerIndex)) {
-      resetRound(otherPlayerIndex);
-    } else {
-      setPlayerIndex(otherPlayerIndex);
-    }
+    setPlayerIndex(nextPlayerIndex);
   }
 
   const drawMainDeckCard = () => {
@@ -78,22 +76,49 @@ const Game = () => {
     }
   }, [mainDeckIndex]);
 
-  const bothPlayersStanding: boolean = players[0]?.stand && players[1]?.stand;
-  const playerFilledBoard: number = checkPlayerFilledBoard(players);
   useEffect(() => {
-    if (playerFilledBoard !== -1) {
-      resetRound(playerFilledBoard);
-    }
-    if (bothPlayersStanding) {
-      // Calculate round winner
-      const winnerIndex: number = determineWinnerIndex(players);
-      if (winnerIndex === -1) {
-        resetRound();
-      } else {
-        resetRound(winnerIndex);
+    if (players.length) {
+      // Check for round winner
+      if (checkBust(players, playerIndex)) {
+        setWinnerIndex(playerIndex);
+      }
+      const player0CardSum: number = sumCardValues(players[0]?.board);
+      const player1CardSum: number = sumCardValues(players[1]?.board);
+      if (players[0]?.stand) {
+        if (player1CardSum < 21 && player1CardSum > player0CardSum) {
+          setWinnerIndex(1);
+        }
+      } else if (players[1]?.stand) {
+        if (player0CardSum < 21 && player0CardSum > player1CardSum) {
+          setWinnerIndex(0);
+        }
+      }
+      const bothPlayersStanding: boolean = players[0]?.stand && players[1]?.stand;
+      if (bothPlayersStanding) {
+        const winnerIndex: number = determineWinnerIndex(players);
+        if (winnerIndex === -1) {
+          // TODO: alert tie
+          window.alert('TIE')
+          resetRound();
+        } else {
+          setWinnerIndex(winnerIndex);
+        }
+      }
+      const playerFilledBoard: number = checkPlayerFilledBoard(players);
+      if (playerFilledBoard !== -1) {
+        setWinnerIndex(playerFilledBoard);
+        return;
       }
     }
-  }, [playerFilledBoard, bothPlayersStanding])
+  }, [players])
+
+  useEffect( () => {
+    if (winnerIndex !== -1) {
+      window.alert(`Winner is, ${winnerIndex}`)
+        resetRound(winnerIndex);
+        setWinnerIndex(-1);
+      }
+    }, [winnerIndex])
 
   useEffect(() => {
     resetRound()
@@ -123,10 +148,12 @@ const Game = () => {
       const isPlayersTurn: boolean = index === playerIndex;
       const otherPlayerIndex: number = (index + 1) % 2;
       const stand = () => {
+        // TODO: Check win conditions here for UX (autowin if other player < 21, this player < other player)
         const playerToModify = {...players[index], stand: true};
         const out = [...players];
         out[index] =  playerToModify;
         setPlayers(out);
+        // But: won't detect bust
         if (!players[otherPlayerIndex].stand) {
           switchPlayer()
         }
