@@ -1,6 +1,5 @@
 import React, { createContext, CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import Board from './components/Board/Board';
-import Hand from './components/Hand/Hand';
 import { card, player } from './types';
 import { MAIN_DECK_ALL_CARDS, shuffleCards, TEST_HAND } from './utils/cards';
 import { createPlayer } from './utils/player';

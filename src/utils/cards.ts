@@ -48,22 +48,6 @@ const SPECIAL_CARDS: card[] = [
   }
 ]
 
-// EXPORT VARIABLES
-export const MAIN_DECK_ALL_CARDS : card[] = createMainDeck();
-// TODO: append SPECIAL_CARDS to SIDE_DECK_ALL_CARDS
-export const SIDE_DECK_ALL_CARDS: card[] = [1, 2, 3, 4, 5, 6].flatMap(i => [-i, i]).map((value) => {
-  return {
-    sign: value > 0 ? 'PLUS' : 'MINUS',
-    value,
-    type: 'NORMAL',
-    deck: 'SIDE'
-  }
-});
-
-export const TEST_HAND: card[] = new Array(4).fill(null).map((value: null) : any => {
-  return  createMainDeckCardFromValue(Math.floor(Math.random() * (39 - 0 + 1) + 0))
-})
-
 // EXPORT FUNCTIONS
 /**
  * Fisher-Yates (Knuth) Shuffle
@@ -88,3 +72,23 @@ export const shuffleCards = (cardsToShuffle: card[]) : card[] => {
   }
   return out
 }
+
+// EXPORT VARIABLES
+export const MAIN_DECK_ALL_CARDS : card[] = createMainDeck();
+// TODO: append SPECIAL_CARDS to SIDE_DECK_ALL_CARDS
+export const SIDE_DECK_ALL_CARDS: card[] = [1, 2, 3, 4, 5, 6].flatMap(i => [
+  {sign: 'PLUS',
+  value: i,
+  type: 'NORMAL',
+  deck: 'SIDE'}, 
+  {sign: 'MINUS',
+  value: -i,
+  type: 'NORMAL',
+  deck: 'SIDE'}, 
+  {sign: 'PLUS',
+  value: i,
+  type: 'PLUSMINUS',
+  deck: 'SIDE'}
+])
+
+export const TEST_HAND: card[] = shuffleCards(SIDE_DECK_ALL_CARDS).slice(0, 4)

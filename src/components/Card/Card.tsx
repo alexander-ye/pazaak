@@ -1,8 +1,14 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
+import { card } from '../../types';
 
-const Card = ({card, onClick}: any) => {
+const Card = ({card, playCard, playable}: {card: card | null, playCard?: any, playable?: any}) => {
+  const [played, setPlayed] = useState<boolean>(false);
+
   if (card) {
-    return <div className="card-container" style={styles.cardContainer} onClick={onClick}>
+    const onClick = playCard && playable && !played 
+      ? () => {playCard(card); setPlayed(true);} 
+      : undefined;
+    return <div className="card-container" style={{...styles.cardContainer, border: `1px solid ${played ? 'brown' : 'blue'}`}} onClick={onClick}>
     <p>{card.value}</p>
   </div>
   } return <div className="card-slot" style={styles.cardContainer}>
@@ -18,6 +24,6 @@ const styles : {[key: string]: CSSProperties } = {
     width: '84px',
     height: '160px',
     margin: '0px 3px',
-    border: '1px solid blue',
+    border: '1px solid blue'
   }
 }
