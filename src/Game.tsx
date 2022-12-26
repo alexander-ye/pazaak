@@ -1,8 +1,9 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import Board from './components/Board/Board';
 import { card, player } from './types';
-import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from './utils/cards';
-import { determineWinnerIndex, createPlayer, checkPlayerFilledBoard, checkBust } from './utils/player';
+import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards } from './utils/cards';
+import { createPlayer, checkForRoundWinner, checkForWinner } from './utils/player';
+import _ from 'lodash';
 
 const Game = () => {  
   const [playerIndex, setPlayerIndex] = useState<number>(0);
@@ -11,11 +12,16 @@ const Game = () => {
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
   const [newRound, setNewRound] = useState<boolean>(true);
-  const [winnerIndex, setWinnerIndex] = useState<number>(-1);
+
+  // State so board renders before winner popup
+  const [roundWinningIndex, setRoundWinningIndex] = useState<number>(NaN);
+  const [gameWinningIndex, setGameWinningIndex] = useState<number>(NaN);
 
   const resetGame = useCallback(() => {
     setShuffledMainDeck(shuffleCards(shuffledMainDeck));
     setMainDeckIndex(0);
+    setGameWinningIndex(NaN);
+    resetRound();
   }, []);
 
   /**
@@ -50,6 +56,7 @@ const Game = () => {
       setPlayerIndex(0);
     }
     setNewRound(true);
+    setRoundWinningIndex(NaN);
   }, [players, shuffledMainDeck]);
 
   useEffect(() => {
@@ -78,47 +85,41 @@ const Game = () => {
 
   useEffect(() => {
     if (players.length) {
-      // Check for round winner
-      if (checkBust(players, playerIndex)) {
-        setWinnerIndex(playerIndex);
-      }
-      const player0CardSum: number = sumCardValues(players[0]?.board);
-      const player1CardSum: number = sumCardValues(players[1]?.board);
-      if (players[0]?.stand) {
-        if (player1CardSum < 21 && player1CardSum > player0CardSum) {
-          setWinnerIndex(1);
-        }
-      } else if (players[1]?.stand) {
-        if (player0CardSum < 21 && player0CardSum > player1CardSum) {
-          setWinnerIndex(0);
-        }
-      }
-      const bothPlayersStanding: boolean = players[0]?.stand && players[1]?.stand;
-      if (bothPlayersStanding) {
-        const winnerIndex: number = determineWinnerIndex(players);
-        if (winnerIndex === -1) {
-          // TODO: alert tie
-          window.alert('TIE')
-          resetRound();
+      const gameWinningPlayerIndex = checkForWinner(players);
+      if (isNaN(gameWinningPlayerIndex)) {
+        const roundWinningPlayerIndex = checkForRoundWinner(players, playerIndex);
+        if (isNaN(roundWinningPlayerIndex)) {
+          return
         } else {
-          setWinnerIndex(winnerIndex);
+          setRoundWinningIndex(roundWinningPlayerIndex);
         }
-      }
-      const playerFilledBoard: number = checkPlayerFilledBoard(players);
-      if (playerFilledBoard !== -1) {
-        setWinnerIndex(playerFilledBoard);
-        return;
+      } else {
+        setGameWinningIndex(gameWinningPlayerIndex);
       }
     }
   }, [players])
 
-  useEffect( () => {
-    if (winnerIndex !== -1) {
-      window.alert(`Winner is, ${winnerIndex}`)
-        resetRound(winnerIndex);
-        setWinnerIndex(-1);
-      }
-    }, [winnerIndex])
+  useEffect(() => {
+    if (isNaN(roundWinningIndex)) {
+      return;
+    }
+    if (roundWinningIndex === -1) {
+      window.alert('TIE');
+      resetRound();
+    } else {
+      window.alert(`Round winner index is ${roundWinningIndex}`);
+      resetRound(roundWinningIndex)
+    }
+  }, [roundWinningIndex])
+
+  useEffect(() => {
+    if (isNaN(gameWinningIndex)) {
+      return;
+    }
+    // Window alerts occur before the appropriate render...
+    window.alert(`Player index ${gameWinningIndex} wins`);
+    resetGame();
+  }, [gameWinningIndex])
 
   useEffect(() => {
     resetRound()
@@ -138,8 +139,15 @@ const Game = () => {
     const playerBoard : (card|null)[] = players[playerIndex].board;
     const updatedBoard = [...playerBoard];
     updatedBoard[playerBoard.indexOf(null)] = card;
+    const playerHand : card[] = players[playerIndex].hand;
+    const updatedHand: card[] = playerHand.map((handCard: card) => {
+      if (_.isEqual(handCard, card)) {
+        return {...handCard, played: true};
+      }
+      return handCard;
+    });
     setPlayers(players.map((player: player, index: number) => {
-      return index === playerIndex ? {...player, board: updatedBoard} : player
+      return index === playerIndex ? {...player, board: updatedBoard, hand: updatedHand} : player
     }))
   }
 

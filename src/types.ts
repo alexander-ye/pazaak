@@ -4,6 +4,7 @@ export interface card {
   type: string;
   deck: string;
   flipValues?: number[] | undefined;
+  played?: boolean | undefined;
 }
 
 export interface player {
@@ -14,4 +15,4 @@ export interface player {
     hand: card[];
     board: (card | null)[];
     bot: boolean;
-  }
+ }

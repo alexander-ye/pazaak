@@ -70,7 +70,7 @@ const Board = ({
   <p>{cardScore}</p>
   {/* Hand */}
   <div style={{display: 'flex', flexDirection: 'row'}}>
-    {TEST_HAND.map((card: card) => {
+    {player.hand.map((card: card) => {
       return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={canInteract}/>
     })}
   </div>

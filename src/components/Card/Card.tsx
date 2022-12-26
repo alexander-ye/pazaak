@@ -2,13 +2,12 @@ import React, { CSSProperties, useState } from 'react';
 import { card } from '../../types';
 
 const Card = ({card, playCard, playable}: {card: card | null, playCard?: any, playable?: any}) => {
-  const [played, setPlayed] = useState<boolean>(false);
 
   if (card) {
-    const onClick = playCard && playable && !played 
-      ? () => {playCard(card); setPlayed(true);} 
+    const onClick = playCard && playable && !card.played 
+      ? () => {playCard(card);} 
       : undefined;
-    return <div className="card-container" style={{...styles.cardContainer, border: `1px solid ${played ? 'brown' : 'blue'}`}} onClick={onClick}>
+    return <div className="card-container" style={{...styles.cardContainer, border: `1px solid ${card.played ? 'brown' : 'blue'}`}} onClick={onClick}>
     <p>{card.value}</p>
   </div>
   } return <div className="card-slot" style={styles.cardContainer}>
