@@ -1,17 +1,22 @@
 import { card } from "../types";
   
 // Local utils
-  /**
-   * Main Deck cards from values
-   */
-  const createMainDeckCardFromValue = (i: number) : card => {
-    return {
-      sign: 'PLUS',
-      value: i,
-      type: 'NORMAL',
-      deck: 'MAIN'
-    }
+/**
+ * Create empty board
+ */
+const createClearBoard = () : null[] => new Array(9).fill(null);
+
+/**
+ * Main Deck cards from values
+ */
+const createMainDeckCardFromValue = (i: number) : card => {
+  return {
+    sign: 'PLUS',
+    value: i,
+    type: 'NORMAL',
+    deck: 'MAIN'
   }
+}
 
 /**
  * Create main deck
@@ -73,6 +78,15 @@ export const shuffleCards = (cardsToShuffle: card[]) : card[] => {
   return out
 }
 
+export const sumCardValues = (cards: (card | null)[]) : number => {
+  return cards.reduce((prev: number, card: card | null) => {
+    if (card === null) {
+      return prev;
+    } 
+    return prev + card.value;
+  }, 0)
+}
+
 // EXPORT VARIABLES
 export const MAIN_DECK_ALL_CARDS : card[] = createMainDeck();
 // TODO: append SPECIAL_CARDS to SIDE_DECK_ALL_CARDS
@@ -90,5 +104,7 @@ export const SIDE_DECK_ALL_CARDS: card[] = [1, 2, 3, 4, 5, 6].flatMap(i => [
   type: 'PLUSMINUS',
   deck: 'SIDE'}
 ])
+
+export const CLEAR_BOARD: null[] = createClearBoard();
 
 export const TEST_HAND: card[] = shuffleCards(SIDE_DECK_ALL_CARDS).slice(0, 4)

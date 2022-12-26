@@ -8,9 +8,10 @@ export interface card {
 
 export interface player {
     name: string;
-    points: number;
+    roundsWon: number;
     score: number;
     stand: boolean;
     hand: card[];
+    board: (card | null)[];
     bot: boolean;
   }

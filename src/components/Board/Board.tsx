@@ -1,68 +1,84 @@
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { card } from '../../types';
-import { TEST_HAND } from '../../utils/cards';
+import React, { CSSProperties, useEffect} from 'react';
+import { card, player } from '../../types';
+import { sumCardValues, TEST_HAND } from '../../utils/cards';
 import Card from '../Card/Card';
 
 const Board = ({
   player, 
-  setPlayerIndex, 
-  drawMainDeckCard, 
   isPlayersTurn, 
   switchPlayer, 
-  opponentStanding}: any) => {
-  // useState to keep track of cards, points, etc here.
-  const [cards, setCards] = useState<((card | null)[])>(new Array(9).fill(null))
+  stand,
+  opponentStanding,
+  playHouseCard,
+  playHandCard
+  }: {
+    player: player,
+    isPlayersTurn: boolean,
+    switchPlayer: any,
+    stand: any,
+    opponentStanding: boolean,
+    playHouseCard: any,
+    playHandCard: any
+  }) => {
+  const cardScore: number = sumCardValues(player.board); 
+ 
+  const canInteract: boolean = 
+    isPlayersTurn && 
+    !player.stand && 
+    (player.board.indexOf(null) !== -1 || cardScore < 20);
+
+  const endTurn = () => {
+    if (opponentStanding) {
+      if (cardScore < 19) {
+        playHouseCard();
+      } else {
+        stand();
+      }
+    } else {
+      if (cardScore > 19) {
+        stand();
+      } else {
+        switchPlayer()
+      }
+    }}
 
   useEffect(() => {
     if (isPlayersTurn) {
       // On turn start
-      const nextCard = drawMainDeckCard();
-      const out = [...cards];
-      out[cards.indexOf(null)] = nextCard;
-      setCards(out);
+      playHouseCard();
     }
   }, [isPlayersTurn]);
 
-  const endTurn = () => {
-    if (opponentStanding) {
-      const nextCard = drawMainDeckCard();
-    } else {
-      switchPlayer();
+  useEffect(() => {
+    if (cardScore === 20) {
+      stand() 
     }
-  }
-  
-  const playHandCard = (card: card | null) => {
-    const out = [...cards];
-    out[cards.indexOf(null)] = card;
-    setCards(out);
-  }
+  }, [cardScore]);
 
   return <div className={`table`}>
   <div className='board-container' style={styles.boardContainer}>
     <h2>{player.name}</h2>
+    <h3>{player.score}</h3>
     {/* Played cards */}
     <div className='cards-container' style={styles.cardsContainer}>
-      {cards.map((card: card | null, index: number) => {
+      {player.board.map((card: card | null, index: number) => {
         return <Card key={`card-slot-${index}`} card={card} />
       })}
     </div>
   </div>
   {/* Card score */}
-  <p>{cards.reduce((prev: number, card: card | null) => {
-    if (card === null) {
-      return prev;
-    } 
-    return prev + card.value;
-  }, 0)}</p>
+  <p>{cardScore}</p>
   {/* Hand */}
   <div style={{display: 'flex', flexDirection: 'row'}}>
     {TEST_HAND.map((card: card) => {
-      return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={isPlayersTurn}/>
+      return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={canInteract}/>
     })}
   </div>
   <div style={{display: 'flex', flexDirection: 'row'}}>
-    <button onClick={switchPlayer} disabled={!isPlayersTurn}>End Turn</button>
-    <button onClick={() => console.log('TODO: STAND')} disabled={!isPlayersTurn}>Stand</button>
+    <button 
+      onClick={endTurn} 
+      disabled={!canInteract}>End Turn</button>
+    <button onClick={() => stand()} disabled={!canInteract}>Stand</button>
   </div>
   </div>
 }
