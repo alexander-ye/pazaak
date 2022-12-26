@@ -61,7 +61,7 @@ export const SIDE_DECK_ALL_CARDS: card[] = [1, 2, 3, 4, 5, 6].flatMap(i => [-i, 
 });
 
 export const TEST_HAND: card[] = new Array(4).fill(null).map((value: null) : any => {
-  return createMainDeckCardFromValue(Math.floor(Math.random() * (39 - 0 + 1) + 0))
+  return  createMainDeckCardFromValue(Math.floor(Math.random() * (39 - 0 + 1) + 0))
 })
 
 // EXPORT FUNCTIONS
@@ -69,7 +69,7 @@ export const TEST_HAND: card[] = new Array(4).fill(null).map((value: null) : any
  * Fisher-Yates (Knuth) Shuffle
  */
 export const shuffleCards = (cardsToShuffle: card[]) : card[] => {
-  // Fisher-Yates (aka Knuth) Shuffle
+  // Fisher-Yates (aka Knuth) Shuffle 
   const out = [...cardsToShuffle];
   let currentIndex = cardsToShuffle.length;
   let randomIndex;
