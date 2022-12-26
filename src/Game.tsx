@@ -1,21 +1,23 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useState } from 'react';
 import Board from './components/Board/Board';
 import { card, player } from './types';
-import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from './utils/cards';
-import { determineWinnerIndex, createPlayer } from './utils/player';
+import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards } from './utils/cards';
+import { determineWinnerIndex, createPlayer, checkPlayerFilledBoard, checkBust } from './utils/player';
 
 const Game = () => {  
   const [playerIndex, setPlayerIndex] = useState<number>(0);
   const [players, setPlayers] = useState<player[]>([]);
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
+  const [newRound, setNewRound] = useState<boolean>(true);
 
-  // TODO: Bug—-incomplete reset (doesn't preserve total round score, board card scores aren't reset)
   const resetGame = useCallback(() => {
-    console.log('TODO')
+    setShuffledMainDeck(shuffleCards(shuffledMainDeck));
+    setMainDeckIndex(0);
   }, []);
 
   const resetRound = useCallback((i?: number) => {
+    // TODO: Draw card for losing player
     if (players.length) {
       if (i === 0 || i === 1) {
         setPlayers(players.map((player: player, index: number) => {
@@ -25,25 +27,42 @@ const Game = () => {
           }
           return updatedPlayer;
         }))
+        // Draw card for losing player
+        setPlayerIndex(i === 0 ? 1 : 0);
       } else {
         setPlayers(players.map((player: player) => {
           return {...player, board: CLEAR_BOARD, stand: false}
         }))
+        // Default to player 1
+        setPlayerIndex(0);
       }
     } else {
       setPlayers([
         createPlayer('player1'),
         createPlayer('player2')
       ]);
+      setShuffledMainDeck(shuffleCards(shuffledMainDeck));
+      setPlayerIndex(0);
     }
-    setPlayerIndex(0);
-    setShuffledMainDeck(shuffleCards(shuffledMainDeck));
-    setMainDeckIndex(0);
+    setNewRound(true);
   }, [players, shuffledMainDeck]);
+
+  useEffect(() => {
+    if (players.length && newRound) {
+      console.log("datadatos")
+      playHouseCard();
+      setNewRound(false);
+    }
+  }, [newRound, playerIndex])
 
 
   const switchPlayer = () => {
-    setPlayerIndex((playerIndex + 1) % 2);
+    const otherPlayerIndex: number = (playerIndex + 1) % 2;
+    if (checkBust(players, playerIndex)) {
+      resetRound(otherPlayerIndex);
+    } else {
+      setPlayerIndex(otherPlayerIndex);
+    }
   }
 
   const drawMainDeckCard = () => {
@@ -60,7 +79,11 @@ const Game = () => {
   }, [mainDeckIndex]);
 
   const bothPlayersStanding: boolean = players[0]?.stand && players[1]?.stand;
+  const playerFilledBoard: number = checkPlayerFilledBoard(players);
   useEffect(() => {
+    if (playerFilledBoard !== -1) {
+      resetRound(playerFilledBoard);
+    }
     if (bothPlayersStanding) {
       // Calculate round winner
       const winnerIndex: number = determineWinnerIndex(players);
@@ -70,7 +93,7 @@ const Game = () => {
         resetRound(winnerIndex);
       }
     }
-  }, [bothPlayersStanding])
+  }, [playerFilledBoard, bothPlayersStanding])
 
   useEffect(() => {
     resetRound()

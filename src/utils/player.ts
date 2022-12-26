@@ -1,5 +1,5 @@
 import { card, player } from "../types"
-import { CLEAR_BOARD } from "./cards"
+import { CLEAR_BOARD, sumCardValues } from "./cards"
 
 export const createPlayer = (name: string, bot: boolean = false) : player => {
   return {
@@ -13,6 +13,35 @@ export const createPlayer = (name: string, bot: boolean = false) : player => {
   }
 }
 
+export const checkPlayerFilledBoard = (players: player[]) : number => {
+  let out: number = -1;
+  players.forEach((player: player, index: number) => {
+    if (player.board.indexOf(null) === -1 && sumCardValues(player.board) < 21) {
+      out = index
+    }
+  })
+  return out;
+}
+
+/**
+ * 
+ * @param players 
+ * @returns array index of unbust player
+ */
+export const checkBust = (players: player[], currentPlayerIndex: number) : boolean => {
+  if (sumCardValues(players[currentPlayerIndex]?.board) > 20) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Determine winner, assuming we have already checked for board filled and bust
+ * Assumes only 2 players
+ * 
+ * @param players 
+ * @returns indexOfWinningPlayer (-1 indicates tie)
+ */
 export const determineWinnerIndex = (players: player[]) : number => {
   let tiebreaker: number = -1;
   // TODO: Determine winner
@@ -28,17 +57,11 @@ export const determineWinnerIndex = (players: player[]) : number => {
       return prev + boardCard.value;
     }, 0)
   });
-  if (playerScores[0] === 20) {
-    if (playerScores[0] === playerScores[1]) {
-      if (tiebreaker === 0 || tiebreaker === 1) {
-        return tiebreaker;
-      }
-    } else {
-      return 0;
-    }
-  } else if (playerScores[1] === 20) {
-    return 1;
+  if (playerScores[0] === playerScores[1]) {
+    return tiebreaker;
   }
-  // TODO:
-  return tiebreaker;
+  if (playerScores[0] > playerScores[1]) {
+    return 0;
+  }
+  return 1;
 }

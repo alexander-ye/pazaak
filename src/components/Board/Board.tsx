@@ -29,7 +29,7 @@ const Board = ({
 
   const endTurn = () => {
     if (opponentStanding) {
-      if (cardScore < 19) {
+      if (cardScore < 20) {
         playHouseCard();
       } else {
         stand();
