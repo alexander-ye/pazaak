@@ -125,7 +125,7 @@ const MainGame = () => {
     }))
   }
 
-  const playHandCard = (card: card | null, index: number) : void => {
+  const playHandCard = (card: card, index: number) : void => {
     const playerBoard : (card|null)[] = players[playerIndex].board;
     const updatedBoard = [...playerBoard];
     updatedBoard[playerBoard?.indexOf(null)] = card;
@@ -138,6 +138,21 @@ const MainGame = () => {
     });
     setPlayers(players.map((player: player, index: number) : player => {
       return index === playerIndex ? {...player, board: updatedBoard, hand: updatedHand} : player
+    }))
+  }
+
+  const flipPlusMinusCard = (cardIndex: number) : void => {
+    const playerHand : card[] = players[playerIndex].hand;
+    const updatedHand: card[] = playerHand.map((handCard: card, i: number) : card => {
+      if (i === cardIndex) {
+        const newSign: string = handCard?.sign === 'PLUS' ? 'MINUS' : 'PLUS';
+        const newValue: number = -handCard?.value;
+        return {...handCard, sign: newSign, value: newValue}
+      }
+      return handCard;
+    });
+    setPlayers(players.map((player: player, index: number): player => {
+      return index === playerIndex ? {...player, hand: updatedHand} : player
     }))
   }
 
@@ -225,6 +240,7 @@ const MainGame = () => {
           stand={stand}
           endTurn={endTurn}
           playHandCard={playHandCard}
+          flipPlusMinusCard={flipPlusMinusCard}
           disabled={boardDisabled}
         />   
         </div>

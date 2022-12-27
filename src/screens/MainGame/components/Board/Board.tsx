@@ -10,6 +10,7 @@ const Board = ({
   stand,
   endTurn,
   playHandCard,
+  flipPlusMinusCard,
   disabled,
   }: {
     playerIndex: number,
@@ -18,7 +19,8 @@ const Board = ({
     isPlayersTurn: boolean,
     stand: () => void,
     endTurn: () => void,
-    playHandCard: (card: card | null, index: number) => void,
+    playHandCard: (card: card, index: number) => void,
+    flipPlusMinusCard: (cardIndex: number) => void,
     disabled: boolean,
   }) => {
   useEffect(() => {
@@ -62,7 +64,13 @@ const Board = ({
     <div className={`flex-row`}>
       {hand.map((card: card, index: number) => {
         const onClick = !disabled && !card.played ? () : void => playHandCard(card, index) : undefined;
-        return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} onClick={onClick}/>
+        const subOnClick = card.type === 'PLUSMINUS' ? () : void => flipPlusMinusCard(index) : undefined;
+        return <Card 
+          key={`${card.type}-${card.sign}-${card.value}`} 
+          card={card} 
+          onClick={onClick}
+          subOnClick={subOnClick}
+        />
       })}
     </div>
     <div className={`flex-row`}>
