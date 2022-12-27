@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect} from 'react';
-import { card, player} from '../../types';
-import Card from '../Card/Card';
+import { card, player} from '../../../../types';
+import Card from '../../../../components/Card/Card';
 
 const Board = ({
   playerIndex,
@@ -9,7 +9,6 @@ const Board = ({
   isPlayersTurn, 
   stand,
   endTurn,
-  playHouseCard,
   playHandCard,
   disabled,
   }: {
@@ -19,17 +18,9 @@ const Board = ({
     isPlayersTurn: boolean,
     stand: any,
     endTurn: any,
-    playHouseCard: any,
     playHandCard: any,
     disabled: boolean,
   }) => {
-  useEffect(() => {
-    // On turn start
-    if (isPlayersTurn) {
-      playHouseCard();
-    }
-  }, [isPlayersTurn]);
-
   useEffect(() => {
     if (cardScore === 20) {
       stand() 
@@ -41,10 +32,11 @@ const Board = ({
   return (
   <div className={`table`}>
     <div className='board-container' style={styles.boardContainer}>
-      <div style={{display: 'flex', flexDirection: playerIndex === 0 ? 'row' : 'row-reverse', justifyContent: 'space-between', border: '2px solid red'}}>
+      <div style={{display: 'flex', flexDirection: playerIndex === 0 ? 'row' : 'row-reverse', justifyContent: 'space-between', alignItems: 'center'}}>
         <div style={{display: 'flex', flexDirection: 'column', position: 'absolute',
           left: playerIndex === 0 ? '-36px' : 'auto',
           right: playerIndex === 0 ? 'auto' : '-36px',
+          top: '4px',
           alignItems: 'center',
       }}>
         <div style={{
@@ -56,19 +48,16 @@ const Board = ({
       }}/>
         <GameScore playerScore={score} />
         </div>
-
       <h2>{name}</h2>
       <h3>{cardScore}</h3>
       </div>
       {/* Played cards */}
       <div className='cards-container' style={styles.cardsContainer}>
         {board.map((card: card | null, index: number) => {
-          return <Card key={`card-slot-${index}`} card={card} style={{border: `2px solid ${card === null ? 'pink' : card?.deck === 'MAIN' ? 'blue' : 'springgreen'}`}} />
+          return <Card key={`card-slot-${index}`} card={card} />
         })}
       </div>
     </div>
-    {/* Card score */}
-    <p>{cardScore}</p>
     {/* Hand */}
     <div style={{display: 'flex', flexDirection: 'row'}}>
       {hand.map((card: card) => {
@@ -98,7 +87,6 @@ const styles: {[key: string]: CSSProperties} = {
     gridTemplateRows: 'repeat(3, 162px)',
     justifyContent: 'center',
     gridGap: '0px',
-    border: '2px solid pink'
   }
 }
 
@@ -106,6 +94,7 @@ const GameScore = ({playerScore= 0}: {playerScore: number}) => {
   return <div style={{display: 'flex', flexDirection: 'column'}}>
     {[1, 2, 3].map((i: number) => {
       return <div 
+        key={i}
         style={{
           margin: '8px 6px',
           width: '20px',

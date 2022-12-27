@@ -87,6 +87,32 @@ export const sumCardValues = (cards: (card | null)[]) : number => {
   }, 0)
 }
 
+const getPlusMinusColor = (sign: string) => {
+  if (sign === 'PLUS') {
+    return 'skyblue';
+  }
+  return 'pink'
+}
+
+export const getCardBackgroundColor = (card: card) : any => {
+  const {deck, type, sign} : any = card;
+  if (deck === 'MAIN') {
+    return 'springgreen';
+  } else {
+    switch (type) {
+      case 'FLIP':
+        return ['',]
+      case 'TIEBREAKER':
+        return 'gold';
+      case 'PLUSMINUS':
+      case 'NORMAL':
+        return getPlusMinusColor(sign);
+      default:
+        return 'pink';
+    }
+  }
+}
+
 // EXPORT VARIABLES
 export const MAIN_DECK_ALL_CARDS : card[] = createMainDeck();
 // TODO: append SPECIAL_CARDS to SIDE_DECK_ALL_CARDS
