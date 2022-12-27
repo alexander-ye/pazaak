@@ -88,7 +88,7 @@ export const shuffleCards = (cardsToShuffle: card[]) : card[] => {
 }
 
 export const sumCardValues = (cards: (card | null)[]) : number => {
-  return cards.reduce((prev: number, card: card | null) => {
+  return cards.reduce((prev: number, card: card | null) : number => {
     if (card === null) {
       return prev;
     } 

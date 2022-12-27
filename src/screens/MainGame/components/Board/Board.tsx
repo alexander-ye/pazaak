@@ -18,7 +18,7 @@ const Board = ({
     isPlayersTurn: boolean,
     stand: () => void,
     endTurn: () => void,
-    playHandCard: (card: card | null) => void,
+    playHandCard: (card: card | null, index: number) => void,
     disabled: boolean,
   }) => {
   useEffect(() => {
@@ -31,9 +31,9 @@ const Board = ({
 
   return (
   <div className={`table`}>
-    <div className='board-container' style={styles.boardContainer}>
-      <div style={{display: 'flex', flexDirection: playerIndex === 0 ? 'row' : 'row-reverse', justifyContent: 'space-between', alignItems: 'center'}}>
-        <div style={{display: 'flex', flexDirection: 'column', position: 'absolute',
+    <div className='flex-col board-container' style={styles.boardContainer}>
+      <div className={`${playerIndex === 0 ? 'flex-row' : 'flex-row-reverse'}`} style={{justifyContent: 'space-between', alignItems: 'center'}}>
+        <div className={`flex-col`} style={{position: 'absolute',
           left: playerIndex === 0 ? '-36px' : 'auto',
           right: playerIndex === 0 ? 'auto' : '-36px',
           top: '4px',
@@ -59,12 +59,13 @@ const Board = ({
       </div>
     </div>
     {/* Hand */}
-    <div style={{display: 'flex', flexDirection: 'row'}}>
-      {hand.map((card: card) => {
-        return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} playCard={playHandCard} playable={!disabled}/>
+    <div className={`flex-row`}>
+      {hand.map((card: card, index: number) => {
+        const onClick = !disabled && !card.played ? () : void => playHandCard(card, index) : undefined;
+        return <Card key={`${card.type}-${card.sign}-${card.value}`} card={card} onClick={onClick}/>
       })}
     </div>
-    <div style={{display: 'flex', flexDirection: 'row'}}>
+    <div className={`flex-row`}>
       <button 
         onClick={endTurn} 
         disabled={disabled}>End Turn</button>
@@ -77,8 +78,6 @@ export default Board;
 
 const styles: {[key: string]: CSSProperties} = {
   boardContainer: {
-    display: 'flex',
-    flexDirection: 'column',
     position: 'relative'
   },
   cardsContainer: {
@@ -91,7 +90,7 @@ const styles: {[key: string]: CSSProperties} = {
 }
 
 const GameScore = ({playerScore= 0}: {playerScore: number}) => {
-  return <div style={{display: 'flex', flexDirection: 'column'}}>
+  return <div className={`flex-col`}>
     {[1, 2, 3].map((i: number) => {
       return <div 
         key={i}

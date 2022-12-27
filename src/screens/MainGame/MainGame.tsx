@@ -9,7 +9,7 @@ const MainGame = () => {
   // Game state
   const [roundWinnerIndex, setRoundWinnerIndex] = useState<number>(NaN);
   const [gameWinnerIndex, setGameWinnerIndex] = useState<number>(NaN);
-  const roundContinues: boolean = useMemo(() => {
+  const roundContinues: boolean = useMemo(() : boolean => {
     return isNaN(roundWinnerIndex) && isNaN(gameWinnerIndex)}, 
     [roundWinnerIndex, gameWinnerIndex]);
 
@@ -22,7 +22,7 @@ const MainGame = () => {
   const [mainDeckIndex, setMainDeckIndex] = useState<number>(0);
   const [shuffledMainDeck, setShuffledMainDeck] = useState<card[]>(MAIN_DECK_ALL_CARDS);
 
-  const resetGame = useCallback(() => {
+  const resetGame = useCallback(() : void => {
     setShuffledMainDeck(shuffleCards(shuffledMainDeck));
     setMainDeckIndex(0);
     setGameWinnerIndex(NaN);
@@ -36,12 +36,12 @@ const MainGame = () => {
   /**
    * @i index of winning player
    */
-  const resetRound = useCallback((i: number = NaN) => {
+  const resetRound = useCallback((i: number = NaN) : void=> {
     // TODO: Draw card for losing player
     if (players.length) {
       let gameWon: boolean = false;
       if (i !== -1) {
-        setPlayers(players.map((player: player, index: number) => {
+        setPlayers(players.map((player: player, index: number) : player => {
           const updatedPlayer = {...player, board: CLEAR_BOARD, stand: false};
           if (index === i) {
             updatedPlayer.score += 1
@@ -58,7 +58,7 @@ const MainGame = () => {
         // Draw card for losing player
         setPlayerIndex(i === 0 ? 1 : 0);
       } else {
-        setPlayers(players.map((player: player) => {
+        setPlayers(players.map((player: player) : player => {
           return {...player, board: CLEAR_BOARD, stand: false}
         }))
         // Default to player 1
@@ -75,19 +75,19 @@ const MainGame = () => {
     setRoundWinnerIndex(NaN);
   }, [players, shuffledMainDeck]);
 
-  const switchPlayer = () => {
+  const switchPlayer = () :void => {
     if (roundContinues) {
       setPlayerIndex(nextPlayerIndex);
     }
   }
 
-  const drawMainDeckCard = () => {
+  const drawMainDeckCard = () :card => {
     const card = shuffledMainDeck[mainDeckIndex];
     setMainDeckIndex(mainDeckIndex + 1);
     return card;
   }
 
-  useEffect(() => {
+  useEffect(() : void => {
     if (mainDeckIndex === shuffledMainDeck.length) {
       setShuffledMainDeck(shuffleCards(shuffledMainDeck));
       setMainDeckIndex(0);
@@ -95,7 +95,7 @@ const MainGame = () => {
   }, [mainDeckIndex]);
 
   // Check for game and round winner
-  useEffect(() => {
+  useEffect(() : void => {
     if (players.length) {
       const gameWinningPlayerIndex = checkForWinner(players);
       if (isNaN(gameWinningPlayerIndex)) {
@@ -115,33 +115,33 @@ const MainGame = () => {
     resetRound()
   }, []);
 
-  const playHouseCard = () => {
+  const playHouseCard = () : void => {
     const nextCard = drawMainDeckCard();
     const playerBoard : (card|null)[] = players[playerIndex].board;
     const updatedBoard = [...playerBoard];
     updatedBoard[playerBoard?.indexOf(null)] = nextCard;
-    setPlayers(players.map((player: player, index: number) => {
+    setPlayers(players.map((player: player, index: number) : player => {
       return index === playerIndex ? {...player, board: updatedBoard} : player
     }))
   }
 
-  const playHandCard = (card: card | null) => {
+  const playHandCard = (card: card | null, index: number) : void => {
     const playerBoard : (card|null)[] = players[playerIndex].board;
     const updatedBoard = [...playerBoard];
     updatedBoard[playerBoard?.indexOf(null)] = card;
     const playerHand : card[] = players[playerIndex].hand;
-    const updatedHand: card[] = playerHand.map((handCard: card) => {
-      if (_.isEqual(handCard, card)) {
+    const updatedHand: card[] = playerHand.map((handCard: card, i: number) : card => {
+      if (i === index) {
         return {...handCard, played: true};
       }
       return handCard;
     });
-    setPlayers(players.map((player: player, index: number) => {
+    setPlayers(players.map((player: player, index: number) : player => {
       return index === playerIndex ? {...player, board: updatedBoard, hand: updatedHand} : player
     }))
   }
 
-  useEffect(() => {
+  useEffect(() : void => {
     if (isNaN(playerIndex)) {
       return;
     }
@@ -174,7 +174,7 @@ const MainGame = () => {
       const isPlayersTurn: boolean = index === playerIndex && roundContinues;
       const otherPlayerIndex: number = (index + 1) % 2;
 
-      const stand = () => {
+      const stand = () : void => {
         const playerToModify = {...players[index], stand: true};
         const out = [...players];
         out[index] =  playerToModify;
@@ -196,7 +196,7 @@ const MainGame = () => {
         player?.stand || 
         player?.board?.indexOf(null) === -1;
 
-      const endTurn = () => {
+      const endTurn = () : void => {
         if (cardScore > 20) {
           setRoundWinnerIndex(otherPlayerIndex);
           return; 

@@ -15,7 +15,7 @@ export const createPlayer = (name: string, bot: boolean = false) : player => {
 
 export const checkPlayerFilledBoard = (players: player[]) : number => {
   let out: number = NaN;
-  players.forEach((player: player, index: number) => {
+  players.forEach((player: player, index: number) : void => {
     if (player.board.indexOf(null) === -1 && sumCardValues(player.board) < 21) {
       out = index
     }
@@ -41,7 +41,7 @@ export const checkBust = (players: player[], currentPlayerIndex: number) : boole
  */
 export const checkForWinner = (players: player[]) : number => {
   let winnerIndex: number = NaN;
-  players.forEach((player: player, index: number) => {
+  players.forEach((player: player, index: number) : void => {
     if (player.score === 3) {
       winnerIndex = index;
     }
@@ -66,7 +66,7 @@ export const checkForWinner = (players: player[]) : number => {
 
 export const checkForRoundWinner = (players: player[], currentPlayerIndex: number) : number => {
   let tiebreaker: number = -1;
-  const player0CardSum: number = players[0]?.board?.reduce((prev: number, boardCard: card | null) => {
+  const player0CardSum: number = players[0]?.board?.reduce((prev: number, boardCard: card | null) : number => {
     if (boardCard?.type === 'TIEBREAKER') {
       tiebreaker = 0;
       return prev;
@@ -76,7 +76,7 @@ export const checkForRoundWinner = (players: player[], currentPlayerIndex: numbe
     } 
     return prev + boardCard.value;
   }, 0);
-  const player1CardSum: number = players[1]?.board?.reduce((prev: number, boardCard: card | null) => {
+  const player1CardSum: number = players[1]?.board?.reduce((prev: number, boardCard: card | null) : number => {
     if (boardCard?.type === 'TIEBREAKER') {
       tiebreaker = 1;
       return prev;
@@ -88,12 +88,12 @@ export const checkForRoundWinner = (players: player[], currentPlayerIndex: numbe
   }, 0);
   let player0HasCardsLeft: boolean = false;
   let player1HasCardsLeft: boolean = false;
-  players[0]?.hand.forEach((card: card) => {
+  players[0]?.hand.forEach((card: card) : void => {
     if (!card.played) {
       player0HasCardsLeft = true;
     }
   })
-  players[1]?.hand.forEach((card: card) => {
+  players[1]?.hand.forEach((card: card) : void => {
     if (!card.played) {
       player1HasCardsLeft = true;
     }

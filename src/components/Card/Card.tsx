@@ -1,13 +1,11 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties } from 'react';
 import { card } from '../../types';
 import { getCardBackgroundColor } from '../../utils/cards';
 
-const Card = ({card, playCard, playable, style}: {card: card | null, playCard?: any, playable?: any, style?:CSSProperties | undefined}) => {
+const Card = ({card, onClick, style}: {card: card | null, onClick?: any, playable?: any, style?:CSSProperties | undefined}) => {
 
   if (card) {
-    const onClick = playCard && playable && !card.played 
-      ? () => {playCard(card);} 
-      : undefined;
+    // Todo: onclick flip
     const backgroundColor: any = getCardBackgroundColor(card);
     return (
       <div className="card-container" style={{...styles.cardContainer, border: `2px solid ${card.played ? 'brown' : backgroundColor}`, ...style}}>
@@ -15,7 +13,7 @@ const Card = ({card, playCard, playable, style}: {card: card | null, playCard?: 
           <p>{card.value}</p>
         </div>
         {onClick 
-        ? <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: '1.2rem', borderRadius: '4px'}}>
+        ? <div className={`flex-row`} style={{alignItems: 'center', justifyContent: 'center', height: '1.2rem', borderRadius: '4px'}}>
           {card.type === 'PLUSMINUS' 
             ? <p>+/-</p> 
             : card.type === 'FLIP' 
