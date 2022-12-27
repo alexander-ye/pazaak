@@ -26,6 +26,10 @@ const MainGame = () => {
     setShuffledMainDeck(shuffleCards(shuffledMainDeck));
     setMainDeckIndex(0);
     setGameWinnerIndex(NaN);
+    setPlayers([
+      createPlayer('player1'),
+      createPlayer('player2')
+    ]);
     resetRound();
   }, []);
 

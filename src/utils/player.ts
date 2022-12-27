@@ -24,7 +24,7 @@ export const checkPlayerFilledBoard = (players: player[]) : number => {
 }
 
 /**
- * 
+ * Check if player busts
  * @param players 
  * @returns array index of unbust player
  */
@@ -37,8 +37,9 @@ export const checkBust = (players: player[], currentPlayerIndex: number) : boole
 
 /**
  * Calcualate game winner
+ * First player to win three sets wins the game (and whatever is being wagered).
  */
-export const checkForWinner = (players: player[]) => {
+export const checkForWinner = (players: player[]) : number => {
   let winnerIndex: number = NaN;
   players.forEach((player: player, index: number) => {
     if (player.score === 3) {
@@ -51,13 +52,19 @@ export const checkForWinner = (players: player[]) => {
 /**
  * Calculate round winner's index
  * -1 indicates tie
+ * Four ways to win the set:
+ * 1. Outscoring: If both players stand, player with the score closest to but not over 20 wins.
+ * 2. Bust: If player ends turn with a score over 20, "bust": other player wins.
+ * 3. Filling the table: If player places 9 cards on table without busting, player automatically wins if their score <= 20.
+ * 4. Tiebreaker: Golden tiebreaker; when used last, user wins if both players have same score.
+ * If set ties, no one gets point for set; play new set.
  * 
  * @param players 
  * @param currentPlayerIndex 
  * @returns 
  */
 
-export const checkForRoundWinner = (players: player[], currentPlayerIndex: number) => {
+export const checkForRoundWinner = (players: player[], currentPlayerIndex: number) : number => {
   let tiebreaker: number = -1;
   const player0CardSum: number = players[0]?.board?.reduce((prev: number, boardCard: card | null) => {
     if (boardCard?.type === 'TIEBREAKER') {

@@ -1,6 +1,5 @@
 import { card } from "../types";
   
-// Local utils
 /**
  * Create empty board
  */
@@ -30,6 +29,16 @@ const createMainDeck = () : card[] => {
   });
 }
 
+/**
+ * Pazaak has the following cards for side deck:
+ * - Plus cards (1-6)
+ * - Minus cards (1-6)
+ * - Plus/Minus cards (1-6)
+ * - Plus/Minus One/Two card (+/- 1/2) card
+ * - Flip cards (2s and 4s become -2s -4s, 3s and 6s become -3s -6s)
+ * - Double card (double value of most recently played card)
+ * - Tiebreaker (+/- 1 card, player who plays wins in event of tie)
+ */
 const SPECIAL_CARDS: card[] = [
   {
     sign: 'ZERO',
@@ -42,12 +51,12 @@ const SPECIAL_CARDS: card[] = [
     sign: 'ZERO',
     value: 0,
     type: 'FLIP',
-    flipValues: [3,6],
+    flipValues: [3, 6],
     deck: 'SIDE'
   },
   {
-    sign: 'ZERO',
-    value: 0,
+    sign: 'TIEBREAKER',
+    value: 1,
     type: 'TIEBREAKER',
     deck: 'SIDE'
   }
@@ -87,7 +96,7 @@ export const sumCardValues = (cards: (card | null)[]) : number => {
   }, 0)
 }
 
-const getPlusMinusColor = (sign: string) => {
+const getPlusMinusColor = (sign: string) : any => {
   if (sign === 'PLUS') {
     return 'skyblue';
   }

@@ -16,9 +16,9 @@ const Board = ({
     player: player,
     cardScore: number,
     isPlayersTurn: boolean,
-    stand: any,
-    endTurn: any,
-    playHandCard: any,
+    stand: () => void,
+    endTurn: () => void,
+    playHandCard: (card: card | null) => void,
     disabled: boolean,
   }) => {
   useEffect(() => {
@@ -27,7 +27,7 @@ const Board = ({
     }
   }, [cardScore]);
 
-  const {name, board, hand, score}: any = player;
+  const {name, board, hand, score}: player = player;
 
   return (
   <div className={`table`}>
@@ -68,7 +68,7 @@ const Board = ({
       <button 
         onClick={endTurn} 
         disabled={disabled}>End Turn</button>
-      <button onClick={() => stand()} disabled={disabled}>Stand</button>
+      <button onClick={stand} disabled={disabled}>Stand</button>
     </div>
   </div>
 )}
