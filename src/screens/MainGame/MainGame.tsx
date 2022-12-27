@@ -5,8 +5,6 @@ import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from '.
 import { createPlayer, checkForRoundWinner, checkForWinner } from '../../utils/player';
 import _ from 'lodash';
 
-// TODO: Need to sequence functions so things happen in order and bugs don't occur
-// e.g. switching player board & playing card even on victory screen
 const MainGame = () => {  
   // Game state
   const [roundWinnerIndex, setRoundWinnerIndex] = useState<number>(NaN);
@@ -14,8 +12,6 @@ const MainGame = () => {
   const roundContinues: boolean = useMemo(() => {
     return isNaN(roundWinnerIndex) && isNaN(gameWinnerIndex)}, 
     [roundWinnerIndex, gameWinnerIndex]);
-    
-  const [newRound, setNewRound] = useState<boolean>(true);
 
   // Players
   const [players, setPlayers] = useState<player[]>([]);
@@ -73,18 +69,12 @@ const MainGame = () => {
       setPlayerIndex(0);
     }
     setRoundWinnerIndex(NaN);
-    setNewRound(true);
   }, [players, shuffledMainDeck]);
 
-  useEffect(() => {
-    if (players.length && isNaN(gameWinnerIndex) && newRound) {
-      playHouseCard();
-      setNewRound(false);
-    }
-  }, [gameWinnerIndex, newRound, playerIndex])
-
   const switchPlayer = () => {
-    setPlayerIndex(nextPlayerIndex);
+    if (roundContinues) {
+      setPlayerIndex(nextPlayerIndex);
+    }
   }
 
   const drawMainDeckCard = () => {
@@ -159,16 +149,7 @@ const MainGame = () => {
 
   return <div className={`table`} style={styles.boardsContainer}>
       <dialog open={!roundContinues}
-        style={{
-          width: '600px',
-          height: '400px',
-          position: 'fixed',
-          top: '50%',
-          left:' 50%',
-          transform: 'translateX(-50%) translateY(-50%)',
-          zIndex: 1,
-          backgroundColor: '#ffffff60'
-       }}
+        style={styles.dialog}
       >
         {!isNaN(gameWinnerIndex) 
         ? <div>
@@ -213,7 +194,7 @@ const MainGame = () => {
           return; 
         }
         if (players[otherPlayerIndex].stand) {
-          if (cardScore < 20) {
+          if (cardScore < 20 && roundContinues) {
             playHouseCard();
           } else {
             stand();
@@ -227,7 +208,7 @@ const MainGame = () => {
         }
       }
 
-      return <div key={player.name} style={{display: 'flex', flexDirection: 'row', margin: 'auto'}}>
+      return <div key={player.name} style={styles.boardContainer}>
         <Board 
           playerIndex={index}
           player={player}
@@ -249,7 +230,21 @@ const styles: {[key: string]: CSSProperties} = {
   boardsContainer: {
     margin: 'auto',
     display: 'flex',
-    flexDirection: 'row',
-    position: 'relative'
-  }
+    flexDirection: 'row' as 'row',
+    position: 'relative' as 'relative'
+  },
+  boardContainer: {
+    display: 'flex', 
+    flexDirection: 'column' as 'column', 
+    margin: 'auto'},
+  dialog: {
+    width: '600px',
+    height: '400px',
+    position: 'fixed' as 'fixed',
+    top: '50%',
+    left:' 50%',
+    transform: 'translateX(-50%) translateY(-50%)',
+    zIndex: 1,
+    backgroundColor: '#ffffff60'
+ }
 }
