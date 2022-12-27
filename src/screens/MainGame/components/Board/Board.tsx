@@ -19,7 +19,7 @@ const Board = ({
     isPlayersTurn: boolean,
     stand: () => void,
     endTurn: () => void,
-    playHandCard: (card: card, index: number) => void,
+    playHandCard: (cardIndex: number) => void,
     flipPlusMinusCard: (cardIndex: number) => void,
     disabled: boolean,
   }) => {
@@ -63,8 +63,12 @@ const Board = ({
     {/* Hand */}
     <div className={`flex-row`}>
       {hand.map((card: card, index: number) => {
-        const onClick = !disabled && !card.played ? () : void => playHandCard(card, index) : undefined;
-        const subOnClick = card.type === 'PLUSMINUS' ? () : void => flipPlusMinusCard(index) : undefined;
+        const onClick = !disabled && !card.played 
+          ? () : void => playHandCard(index) 
+          : undefined;
+        const subOnClick = card.type === 'PLUSMINUS' 
+          ? () : void => flipPlusMinusCard(index) 
+          : undefined;
         return <Card 
           key={`${card.type}-${card.sign}-${card.value}`} 
           card={card} 

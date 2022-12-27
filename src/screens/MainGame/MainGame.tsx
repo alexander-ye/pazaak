@@ -125,13 +125,13 @@ const MainGame = () => {
     }))
   }
 
-  const playHandCard = (card: card, index: number) : void => {
+  const playHandCard = (cardIndex: number) : void => {
     const playerBoard : (card|null)[] = players[playerIndex].board;
     const updatedBoard = [...playerBoard];
-    updatedBoard[playerBoard?.indexOf(null)] = card;
     const playerHand : card[] = players[playerIndex].hand;
     const updatedHand: card[] = playerHand.map((handCard: card, i: number) : card => {
-      if (i === index) {
+      if (i === cardIndex) {
+        updatedBoard[playerBoard?.indexOf(null)] = handCard;
         return {...handCard, played: true};
       }
       return handCard;
