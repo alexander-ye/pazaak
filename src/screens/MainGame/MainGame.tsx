@@ -175,6 +175,10 @@ const MainGame = () => {
         const out = [...players];
         out[index] =  playerToModify;
         setPlayers(out);
+        if (cardScore > 20) {
+          setRoundWinnerIndex(otherPlayerIndex);
+          return;
+        }
         if (!players[otherPlayerIndex].stand) {
           switchPlayer()
         }
