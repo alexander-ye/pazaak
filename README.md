@@ -1,14 +1,21 @@
 # Pazaak Created With React
 
+## About
 A recreation of the card game "Pazaak" from Star Wars: Knights of the Old Republic II. 
+
+NOT UI/UX-optimized. I got bored one day and didn't want to boot up the actual game just to play Pazaak, so I made... just Pazaak!
+
+TODOS: 
+- Bot
+- Multiplayer
 
 More comprehensive readme to come.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Usage: Available Scripts
 
-In the project directory, you can run:
+Run `npm install` running the following from in the project directory:
 
 ### `npm start`
 
