@@ -8,26 +8,20 @@ const Card = ({card, onClick, subOnClick, style}: {card: card | null, onClick?: 
     // Todo: onclick flip
     const backgroundColor: any = getCardBackgroundColor(card);
     return (
-      <div className="card-container" style={{...styles.cardContainer, border: `2px solid ${card.played ? 'brown' : backgroundColor}`, ...style}}>
-        <div style={{backgroundColor: backgroundColor, flex: 1}} onClick={onClick}>
+      <div className="card-container" style={{...styles.cardContainer, border: `2px solid ${card.played ? 'tan' : backgroundColor}`, ...style}}>
+        <div style={{backgroundColor: card.played ? 'tan' : backgroundColor, flex: 1, borderRadius: '10px', padding: '10px'}} onClick={onClick}>
           <p>{card.value}</p>
-        </div>
-        {onClick 
-        ? <div 
+        </div><div 
           className={`flex-row`} style={{alignItems: 'center', justifyContent: 'center', height: '1.2rem', borderRadius: '4px'}}
           onClick={subOnClick}
           >
           {card.type === 'PLUSMINUS' 
             ? <p>{`${card.sign === 'PLUS' ? '+/-' : '-/+'}`}</p> 
-            : card.type === 'FLIP' 
-              ? <p>flip</p> 
-              : null }
+            : null }
           </div> 
-        : null}
       </div>
     )
   } return <div className="card-slot" style={{...styles.cardContainer, ...style}}>
-    <p>N</p>
   </div>
 
 }
@@ -38,6 +32,8 @@ const styles : {[key: string]: CSSProperties } = {
   cardContainer: {
     width: '100px',
     height: '160px',
+    padding: '4px',
+    borderRadius: '8px',
     border: '1px solid pink',
     display: 'flex',
     flexDirection: 'column'

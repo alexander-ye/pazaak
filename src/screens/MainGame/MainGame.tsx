@@ -3,7 +3,6 @@ import Board from './components/Board/Board';
 import { card, player } from '../../types';
 import { CLEAR_BOARD, MAIN_DECK_ALL_CARDS, shuffleCards, sumCardValues } from '../../utils/cards';
 import { createPlayer, checkForRoundWinner, checkForWinner } from '../../utils/player';
-import _ from 'lodash';
 
 const MainGame = () => {  
   // Game state
@@ -81,7 +80,7 @@ const MainGame = () => {
     }
   }
 
-  const drawMainDeckCard = () :card => {
+  const drawMainDeckCard = () : card => {
     const card = shuffledMainDeck[mainDeckIndex];
     setMainDeckIndex(mainDeckIndex + 1);
     return card;
@@ -127,7 +126,7 @@ const MainGame = () => {
 
   const playHandCard = (cardIndex: number) : void => {
     const playerBoard : (card|null)[] = players[playerIndex].board;
-    const updatedBoard = [...playerBoard];
+    const updatedBoard : (card|null)[] = [...playerBoard];
     const playerHand : card[] = players[playerIndex].hand;
     const updatedHand: card[] = playerHand.map((handCard: card, i: number) : card => {
       if (i === cardIndex) {
